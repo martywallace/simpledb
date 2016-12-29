@@ -4,6 +4,12 @@ Execute common MySQL operations easily with this PDO wrapper.
 
 ## API.
 
+Create an instance of `SimpleDb\Database`:
+
+```
+$db = new SimpleDb\Database('user:password@host/database');
+```
+
 <table>
     <tbody>
         <tr>

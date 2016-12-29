@@ -9,6 +9,7 @@ use Exception;
  * Provides access to a database.
  *
  * @property-read PDO $pdo The PDO instance managing the connection internally.
+ * @property-read string $lastInsertId The last ID inserted.
  *
  * @package SimpleDb
  * @author Marty Wallace
@@ -30,6 +31,7 @@ class Database {
 
 	public function __get($prop) {
 		if ($prop === 'pdo') return $this->_pdo;
+		if ($prop === 'lastInsertId') return $this->_pdo->lastInsertId();
 
 		return null;
 	}
