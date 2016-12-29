@@ -1,0 +1,22 @@
+{
+	"name": "martywallace/simpledb",
+	"version": "1.0.0",
+	"description": "A thin wrapper around PDO for common MySQL operations.",
+	"homepage": "https://github.com/MartyWallace/simpledb",
+	"type": "library",
+	"license": "MIT",
+	"authors": [{
+		"name": "Marty Wallace",
+		"email": "marty@martywallace.com",
+		"homepage": "http://martywallace.com",
+		"role": "Lead Developer"
+	}],
+	"autoload": {
+		"psr-4" : {
+			"SimpleDb\\" : "src/SimpleDb/"
+		}
+	},
+	"require": {
+		"php": ">=5.6.4"
+	}
+}
