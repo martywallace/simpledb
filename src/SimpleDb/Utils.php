@@ -5,8 +5,8 @@ use Exception;
 class Utils {
 
 	/**
-	 * Extract login information from a connection string formatted <code>user:password@host/database</code>. Returns
-	 * an array with the keys host, user, password and database.
+	 * Extract login information from a connection string formatted <code>username:password@host/database</code>. Returns
+	 * an array with the keys host, username, password and database.
 	 *
 	 * @param string $value The connection string.
 	 *

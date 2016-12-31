@@ -22,7 +22,7 @@ class Database {
 	/**
 	 * Database constructor.
 	 *
-	 * @param string $connection The connection string formatted user:password?@host/database.
+	 * @param string $connection The connection string formatted username:password?@host/database.
 	 */
 	public function __construct($connection) {
 		$config = Utils::parseConnectionString($connection);
@@ -84,11 +84,7 @@ class Database {
 	public function one($query, array $params = null, $class = null) {
 		$all = $this->all($query, $params, $class);
 
-		if (!empty($all)) {
-			return $all[0];
-		}
-
-		return null;
+		return empty($all) ? null : $all[0];
 	}
 
 	/**
@@ -138,5 +134,33 @@ class Database {
 		}
 
 		return $fallback;
+	}
+
+	/**
+	 * Delete a row from a table.
+	 *
+	 * @param string $table The table to delete from.
+	 * @param mixed $primary The primary key value.
+	 * @param string $column The name of the primary key column.
+	 *
+	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
+	 */
+	public function delete($table, $primary, $column = 'id') {
+		$this->query('DELETE FROM ' . $table . ' WHERE ' . $column . ' = ?', [$primary]);
+	}
+
+	/**
+	 * Insert a new row into a target table.
+	 *
+	 * @param string $table The table to insert data into.
+	 * @param array $data The data to insert.
+	 *
+	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
+	 */
+	public function insert($table, array $data) {
+		$columns = array_keys($data);
+		$placeholders = array_fill(0, count($data), '?');
+
+		$this->query('INSERT INTO ' . $table . '(' . implode(', ', $columns) . ') VALUES(' . implode(', ', $placeholders) . ')', array_values($data));
 	}
 }
