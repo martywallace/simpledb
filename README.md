@@ -2,7 +2,7 @@
 
 Execute common MySQL operations easily with this PDO wrapper.
 
-(No relation to [AWS SimpleDB](https://aws.amazon.com/simpledb/))
+> Note: This project has no relation to [AWS SimpleDB](https://aws.amazon.com/simpledb/).
 
 ## Installation.
 

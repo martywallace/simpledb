@@ -6,6 +6,7 @@ php:
 services: mysql
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+  - mysql -e 'USE test;'
   - mysql -e 'CREATE TABLE IF NOT EXISTS users (id int(10) UNSIGNED NOT NULL, name int(32) DEFAULT NULL, email varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;'
   - mysql -e 'TRUNCATE users;'
 install: composer install
