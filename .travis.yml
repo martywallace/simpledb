@@ -3,14 +3,11 @@ php:
   - '5.6'
   - '7.0'
   - '7.1'
-env:
-  - DB=mysql
 services:
   - mysql
 before_install:
   - mysql -u root -e 'CREATE DATABASE IF NOT EXISTS test;'
-  - mysql -u root -e 'USE test;'
-  - mysql -u root -e 'CREATE TABLE IF NOT EXISTS users (id int(10) UNSIGNED NOT NULL, name int(32) DEFAULT NULL, email varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;'
-  - mysql -u root -e 'TRUNCATE users;'
+  - mysql -u root -e 'USE test; CREATE TABLE IF NOT EXISTS users (id int(10) UNSIGNED NOT NULL, name int(32) DEFAULT NULL, email varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;'
+  - mysql -u root -e 'USE test; TRUNCATE users;'
 install:
   - composer install
