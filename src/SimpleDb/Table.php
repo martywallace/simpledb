@@ -28,13 +28,13 @@ class Table {
 	/**
 	 * Return one row from this table using its primary key.
 	 *
-	 * @param string|number $primary The primary key value.
-	 * @param string $primaryColumn The primary key column name.
+	 * @param string|number $value The column value.
+	 * @param string $column The column name.
 	 *
 	 * @return mixed
 	 */
-	public function one($primary, $primaryColumn = 'id') {
-		return $this->_db->one('SELECT * FROM ' . $this->_name . ' WHERE ' . $primaryColumn . ' = ?', [$primary]);
+	public function one($value, $column = 'id') {
+		return $this->_db->one('SELECT * FROM ' . $this->_name . ' WHERE ' . $column . ' = ?', [$value]);
 	}
 
 	/**
@@ -49,11 +49,11 @@ class Table {
 	/**
 	 * Delete a row from this table.
 	 *
-	 * @param string|number $primary The primary key value.
-	 * @param string $primaryColumn The primary key column name.
+	 * @param string|number $value The column value.
+	 * @param string $column The column name.
 	 */
-	public function delete($primary, $primaryColumn = 'id') {
-		$this->_db->delete($this->_name, $primary, $primaryColumn);
+	public function delete($value, $column = 'id') {
+		$this->_db->delete($this->_name, $value, $column);
 	}
 
 	/**

@@ -2,6 +2,10 @@
 
 Execute common MySQL operations easily with this PDO wrapper.
 
+## Installation.
+
+    $ composer require martywallace/simpledb
+
 ## API.
 
 Create an instance of `SimpleDb\Database`:
