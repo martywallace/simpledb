@@ -9,7 +9,7 @@ use SimpleDb\Database;
 class SimpleDbTest extends TestCase {
 
 	public function testConnect() {
-		return new Database('root@127.0.0.1/test');
+		return new Database('travis@127.0.0.1/test');
 	}
 
 	/**
