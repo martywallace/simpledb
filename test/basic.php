@@ -12,7 +12,12 @@ print_r($db->one('SELECT * FROM users'));
 print_r($db->all('SELECT * FROM users'));
 print_r($db->prop('SELECT email FROM users WHERE id = ?', [1]));
 
-$db->insert('users', [
-	'email' => 'test@test.com',
+print_r($db->table('users')->one(2));
+print_r($db->table('users')->all());
+
+$db->table('users')->delete(1);
+
+$db->table('users')->insert([
+	'email' => 'ts@test.com',
 	'password' => password_hash('test', CRYPT_BLOWFISH)
 ]);

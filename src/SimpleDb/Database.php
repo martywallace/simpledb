@@ -19,6 +19,9 @@ class Database {
 	/** @var PDO */
 	private $_pdo = null;
 
+	/** @var Table[] */
+	private $_tables = [];
+
 	/**
 	 * Database constructor.
 	 *
@@ -141,12 +144,12 @@ class Database {
 	 *
 	 * @param string $table The table to delete from.
 	 * @param mixed $primary The primary key value.
-	 * @param string $column The name of the primary key column.
+	 * @param string $primaryColumn The name of the primary key column.
 	 *
 	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
 	 */
-	public function delete($table, $primary, $column = 'id') {
-		$this->query('DELETE FROM ' . $table . ' WHERE ' . $column . ' = ?', [$primary]);
+	public function delete($table, $primary, $primaryColumn = 'id') {
+		$this->query('DELETE FROM ' . $table . ' WHERE ' . $primaryColumn . ' = ?', [$primary]);
 	}
 
 	/**
@@ -162,5 +165,20 @@ class Database {
 		$placeholders = array_fill(0, count($data), '?');
 
 		$this->query('INSERT INTO ' . $table . '(' . implode(', ', $columns) . ') VALUES(' . implode(', ', $placeholders) . ')', array_values($data));
+	}
+
+	/**
+	 * Return a Table instance for a specific table.
+	 *
+	 * @param string $name The name of the table.
+	 *
+	 * @return Table
+	 */
+	public function table($name) {
+		if (!array_key_exists($name, $this->_tables)) {
+			$this->_tables[$name] = new Table($this, $name);
+		}
+
+		return $this->_tables[$name];
 	}
 }
