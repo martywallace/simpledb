@@ -2,6 +2,8 @@
 
 Execute common MySQL operations easily with this PDO wrapper.
 
+(No relation to [AWS SimpleDB](https://aws.amazon.com/simpledb/))
+
 ## Installation.
 
     $ composer require martywallace/simpledb
