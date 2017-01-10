@@ -9,7 +9,18 @@ use SimpleDb\Database;
 class SimpleDbTest extends TestCase {
 
 	public function testConnect() {
-		return new Database('travis@127.0.0.1/test');
+		return new Database('root@127.0.0.1/test');
+	}
+
+	/**
+	 * @depends testConnect
+	 */
+	public function testInsert(Database $db) {
+		$db->insert('users', ['name' => 'John', 'email' => 'example@example.com']);
+
+		$this->assertEquals($db->one('SELECT * FROM users WHERE email = ?', ['example@example.com'])->name, 'John');
+
+		return 'example@example.com';
 	}
 
 	/**
@@ -28,17 +39,6 @@ class SimpleDbTest extends TestCase {
 		$records = $db->all('SELECT * FROM users');
 
 		$this->assertTrue(is_array($records));
-	}
-
-	/**
-	 * @depends testConnect
-	 */
-	public function testInsert(Database $db) {
-		$db->insert('users', ['name' => 'John', 'email' => 'example@example.com']);
-
-		$this->assertEquals($db->one('SELECT * FROM users WHERE email = ?', ['example@example.com'])->name, 'John');
-
-		return 'example@example.com';
 	}
 
 	/**
