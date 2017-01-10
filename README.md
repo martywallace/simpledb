@@ -1,5 +1,7 @@
 #simpledb.
 
+![https://api.travis-ci.org/MartyWallace/simpledb.png?branch=master](https://api.travis-ci.org/MartyWallace/simpledb.png?branch=master)
+
 Execute common MySQL operations easily with this PDO wrapper.
 
 > Note: This project has no relation to [AWS SimpleDB](https://aws.amazon.com/simpledb/).
