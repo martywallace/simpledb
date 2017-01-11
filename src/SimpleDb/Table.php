@@ -8,20 +8,15 @@
  */
 class Table {
 
-	/** @var Database */
-	private $_db;
-
 	/** @var string */
 	private $_name;
 
 	/**
 	 * Table constructor.
 	 *
-	 * @param Database $db The database instance responsible for this table.
 	 * @param string $name The table name.
 	 */
-	public function __construct(Database $db, $name) {
-		$this->_db = $db;
+	public function __construct($name) {
 		$this->_name = $name;
 	}
 
@@ -34,7 +29,7 @@ class Table {
 	 * @return Row
 	 */
 	public function one($value, $column = 'id') {
-		return $this->_db->one('SELECT * FROM ' . $this->_name . ' WHERE ' . $column . ' = ?', [$value]);
+		return Database::get()->one('SELECT * FROM ' . $this->_name . ' WHERE ' . $column . ' = ?', [$value]);
 	}
 
 	/**
@@ -43,7 +38,7 @@ class Table {
 	 * @return Rows
 	 */
 	public function all() {
-		return $this->_db->all('SELECT * FROM ' . $this->_name);
+		return Database::get()->all('SELECT * FROM ' . $this->_name);
 	}
 
 	/**
@@ -53,7 +48,7 @@ class Table {
 	 * @param string $column The column name.
 	 */
 	public function delete($value, $column = 'id') {
-		$this->_db->delete($this->_name, $value, $column);
+		Database::get()->delete($this->_name, $value, $column);
 	}
 
 	/**
@@ -62,7 +57,7 @@ class Table {
 	 * @param array $data The data to insert.
 	 */
 	public function insert(array $data) {
-		$this->_db->insert($this->_name, $data);
+		Database::get()->insert($this->_name, $data);
 	}
 
 }

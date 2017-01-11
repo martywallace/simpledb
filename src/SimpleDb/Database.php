@@ -16,6 +16,9 @@ use Exception;
  */
 class Database {
 
+	/** @var Database */
+	private static $_instance = null;
+
 	/** @var PDO */
 	private $_pdo = null;
 
@@ -23,13 +26,36 @@ class Database {
 	private $_tables = [];
 
 	/**
+	 * Statically get the active Database instance.
+	 *
+	 * @return Database
+	 *
+	 * @throws Exception If the database has not been instantiated.
+	 */
+	public static function get() {
+		if (empty(static::$_instance)) {
+			throw new Exception('The database has not been instantiated.');
+		}
+
+		return static::$_instance;
+	}
+
+	/**
 	 * Database constructor.
 	 *
 	 * @param string $connection The connection string formatted username:password?@host/database.
+	 *
+	 * @throws Exception If this is not the first instance of Database created.
 	 */
 	public function __construct($connection) {
-		$config = Utils::parseConnectionString($connection);
-		$this->_pdo = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['database'], $config['username'], $config['password']);
+		if (static::$_instance === null) {
+			$config = Utils::parseConnectionString($connection);
+			$this->_pdo = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['database'], $config['username'], $config['password']);
+
+			static::$_instance = $this;
+		} else {
+			throw new Exception('You have already created an instance of Database - you may only have one.');
+		}
 	}
 
 	public function __get($prop) {
@@ -163,7 +189,7 @@ class Database {
 	 */
 	public function table($name) {
 		if (!array_key_exists($name, $this->_tables)) {
-			$this->_tables[$name] = new Table($this, $name);
+			$this->_tables[$name] = new Table($name);
 		}
 
 		return $this->_tables[$name];

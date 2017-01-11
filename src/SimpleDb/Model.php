@@ -19,6 +19,9 @@ abstract class Model implements JsonSerializable {
 	/** @var mixed[] */
 	private $_unknown = [];
 
+	/** @var array[] */
+	private $_relations = [];
+
 	/**
 	 * Return an array of fields that this model should handle. The keys of the returned array should be the names of
 	 * the fields, and the values should be the types for those fields.
@@ -32,10 +35,19 @@ abstract class Model implements JsonSerializable {
 	abstract protected function fields();
 
 	/**
+	 * Returns an array of relations that this model has to other models.
+	 *
+	 * @return array[]
+	 */
+	protected function relations() {
+		return [];
+	}
+
+	/**
 	 * @param Populator $populator The populator (usually a {@link Row} or {@link Rows} instance) that will provide data
 	 * necessary to populate the newly created model.
 	 *
-	 * @return static|static[]
+	 * @return static|Models
 	 */
 	public static function from(Populator $populator) {
 		return $populator->populate(static::class);
@@ -43,6 +55,7 @@ abstract class Model implements JsonSerializable {
 
 	public function __construct(array $data = []) {
 		$this->_fields = $this->fields();
+		$this->_relations = $this->relations();
 
 		foreach ($this->_fields as $field => $type) {
 			$this->_data[$field] = null;
