@@ -10,7 +10,7 @@ use Iterator;
  * @package SimpleDb
  * @author Marty Wallace
  */
-class Rows implements Iterator {
+class Rows implements Iterator, Populator {
 
 	/** @var int */
 	private $_index = 0;
@@ -26,6 +26,21 @@ class Rows implements Iterator {
 		if ($prop === 'first') return count($this->_rows) > 0 ? $this->_rows[0] : null;
 
 		return null;
+	}
+
+	/**
+	 * Populate and return a set of models using data from the rows contained in this set.
+	 *
+	 * @param string $class The name of the model class to construct and populate.
+	 *
+	 * @return Model[]
+	 */
+	public function populate($class) {
+		$models = [];
+
+		foreach ($this as $row) $models[] = $row->populate($class);
+
+		return $models;
 	}
 
 	/** @internal */
