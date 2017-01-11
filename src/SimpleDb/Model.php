@@ -113,8 +113,22 @@ abstract class Model implements JsonSerializable {
 		return array_key_exists($field, $this->fields());
 	}
 
-	public function jsonSerialize() {
+	public function getPrimitiveData() {
 		return $this->_data;
+	}
+
+	public function getRefinedData() {
+		$data = [];
+
+		foreach ($this->_fields as $field => $type) {
+			$data[$field] = Field::toRefined($this->get($field), $type);
+		}
+
+		return $data;
+	}
+
+	public function jsonSerialize() {
+		return $this->getRefinedData();
 	}
 
 }
