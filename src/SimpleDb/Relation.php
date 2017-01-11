@@ -1,15 +1,20 @@
 <?php namespace SimpleDb;
 
-class Relation {
+/**
+ * A database relationship.
+ *
+ * @package SimpleDb
+ * @author Marty Wallace
+ */
+abstract class Relation {
 
 	/**
-	 * One other record is associated with this model.
+	 * Fetch related data.
+	 *
+	 * @param Model $model The model to fetch related data through.
+	 *
+	 * @return Row|Rows|Model|Models
 	 */
-	const ONE = 'one';
-
-	/**
-	 * One or more records are associated with this model.
-	 */
-	const MANY = 'many';
+	abstract public function fetch(Model $model);
 
 }

@@ -1,5 +1,6 @@
 <?php namespace SimpleDb;
 
+use Exception;
 use JsonSerializable;
 
 /**
@@ -19,7 +20,7 @@ abstract class Model implements JsonSerializable {
 	/** @var mixed[] */
 	private $_unknown = [];
 
-	/** @var array[] */
+	/** @var Relation[] */
 	private $_relations = [];
 
 	/**
@@ -57,6 +58,16 @@ abstract class Model implements JsonSerializable {
 		$this->_fields = $this->fields();
 		$this->_relations = $this->relations();
 
+		foreach ($this->_relations as $name => $relation) {
+			if (!($relation instanceof Relation)) {
+				throw new Exception('Relation "' . $name . '" must inherit SimpleDb\Relation.');
+			}
+
+			if ($this->hasField($name)) {
+				throw new Exception('Cannot declare relation "' . $name . '" on "' . static::class . '" - a field with the same name already exists.');
+			}
+		}
+
 		foreach ($this->_fields as $field => $type) {
 			$this->_data[$field] = null;
 		}
@@ -65,6 +76,10 @@ abstract class Model implements JsonSerializable {
 	}
 
 	public function __get($prop) {
+		if (array_key_exists($prop, $this->_relations)) {
+			return $this->getRelated($prop);
+		}
+
 		return $this->get($prop);
 	}
 
@@ -73,7 +88,7 @@ abstract class Model implements JsonSerializable {
 	}
 
 	public function __isset($prop) {
-		return array_key_exists($prop, $this->_data) || array_key_exists($prop, $this->_unknown);
+		return array_key_exists($prop, $this->_data) || array_key_exists($prop, $this->_unknown) || array_key_exists($prop, $this->_relations);
 	}
 
 	/**
@@ -138,6 +153,23 @@ abstract class Model implements JsonSerializable {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Fetch a related model.
+	 *
+	 * @param string $name The relation name {@link Model::relations() specified}.
+	 *
+	 * @returns Model|Models
+	 *
+	 * @throws Exception If the relation name is unknown.
+	 */
+	public function getRelated($name) {
+		if (array_key_exists($name, $this->_relations)) {
+			return $this->_relations[$name]->fetch($this);
+		} else {
+			throw new Exception('Unknown relation "' . $name . '".');
+		}
 	}
 
 	public function jsonSerialize() {
