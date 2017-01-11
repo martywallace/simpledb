@@ -6,6 +6,7 @@ use Iterator;
  * A set of rows from a database query.
  *
  * @property-read Row $first The first row in this series.
+ * @property-read int $count The amount of rows in this series.
  *
  * @package SimpleDb
  * @author Marty Wallace
@@ -24,6 +25,7 @@ class Rows implements Iterator, Populator {
 
 	public function __get($prop) {
 		if ($prop === 'first') return count($this->_rows) > 0 ? $this->_rows[0] : null;
+		if ($prop === 'count') return count($this->_rows);
 
 		return null;
 	}

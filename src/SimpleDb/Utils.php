@@ -1,6 +1,8 @@
 <?php namespace SimpleDb;
 
 use Exception;
+use JsonSerializable;
+use stdClass;
 
 /**
  * Utilities for this package.
@@ -27,6 +29,17 @@ class Utils {
 
 		if (!empty($matches)) return $matches;
 		else throw new Exception('The supplied connection string is invalid.');
+	}
+
+	/**
+	 * Determine whether a value can be encoded as JSON.
+	 *
+	 * @param mixed $value The value to check.
+	 *
+	 * @return bool
+	 */
+	public static function isJsonSerializable($value) {
+		return is_array($value) || $value instanceof stdClass || $value instanceof JsonSerializable;
 	}
 
 }

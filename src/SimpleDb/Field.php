@@ -1,6 +1,9 @@
 <?php namespace SimpleDb;
 
 use DateTime;
+use Exception;
+use JsonSerializable;
+use stdClass;
 
 /**
  * Encapsulates functionality that deals with model fields.
@@ -28,6 +31,12 @@ class Field {
 	const DATETIME = 'datetime';
 
 	/**
+	 * A JSON value. Provides {@link json_decode() decoded JSON} as an object when {@link Field::toRefined refined} and
+	 * {@link json_encode() encoded JSON} when {@link Field::toPrimitive() made primitive}.
+	 */
+	const JSON = 'json';
+
+	/**
 	 * Takes a refined or primitive value and returns the storable, primitive version of that value.
 	 *
 	 * @param mixed $value The input value.
@@ -43,9 +52,13 @@ class Field {
 			}
 
 			if ($type === self::DATETIME) {
-				if ($value instanceof DateTime) {
-					return $value->format('Y-m-d H:i:s');
-				}
+				if ($value instanceof DateTime) return $value->format('Y-m-d H:i:s');
+			}
+
+			if ($type === self::JSON) {
+				if (Utils::isJsonSerializable($value)) return strval(json_encode($value));
+				else if (empty($value)) return null;
+				else throw new Exception('Could not convert refined value to JSON.');
 			}
 		}
 
@@ -60,6 +73,8 @@ class Field {
 	 * @param string $type The type associated with the value.
 	 *
 	 * @return mixed
+	 *
+	 * @throws Exception If any errors were encountered attempting to convert the value.
 	 */
 	public static function toRefined($value, $type) {
 		if (is_string($value)) {
@@ -71,6 +86,18 @@ class Field {
 			if ($type === self::DATETIME) {
 				if (empty($value)) return null;
 				return new DateTime($value);
+			}
+
+			if ($type === self::JSON) {
+				if (!empty($value)) {
+					$base = json_decode($value);
+
+					if (json_last_error() !== JSON_ERROR_NONE) {
+						throw new Exception('Could not decode primitive JSON.');
+					}
+
+					return $base;
+				}
 			}
 		}
 
