@@ -31,7 +31,7 @@ class Table {
 	 * @param string|number $value The column value.
 	 * @param string $column The column name.
 	 *
-	 * @return mixed
+	 * @return Row
 	 */
 	public function one($value, $column = 'id') {
 		return $this->_db->one('SELECT * FROM ' . $this->_name . ' WHERE ' . $column . ' = ?', [$value]);
@@ -40,7 +40,7 @@ class Table {
 	/**
 	 * Return all rows from this table.
 	 *
-	 * @return array
+	 * @return Rows
 	 */
 	public function all() {
 		return $this->_db->all('SELECT * FROM ' . $this->_name);

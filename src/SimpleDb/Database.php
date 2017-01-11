@@ -77,17 +77,14 @@ class Database {
 	 *
 	 * @param string $query The query to execute.
 	 * @param array|null $params Parameters to bind to the query.
-	 * @param string|null $class The name of a class to optionally create and inject the returned values into.
 	 *
-	 * @return mixed
+	 * @return Row
 	 *
 	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
 	 * @throws Exception If the provided class does not exist.
 	 */
-	public function one($query, array $params = null, $class = null) {
-		$all = $this->all($query, $params, $class);
-
-		return empty($all) ? null : $all[0];
+	public function one($query, array $params = null) {
+		return $this->all($query, $params)->first;
 	}
 
 	/**
@@ -95,27 +92,17 @@ class Database {
 	 *
 	 * @param string $query The query to execute.
 	 * @param array|null $params Parameters to bind to the query.
-	 * @param string|null $class The name of a class to optionally create and inject the returned values into.
 	 *
-	 * @return array
+	 * @return Rows
 	 *
 	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
 	 * @throws Exception If the provided class does not exist.
 	 */
-	public function all($query, array $params = null, $class = null) {
+	public function all($query, array $params = null) {
 		$stmt = $this->query($query, $params);
+		$rows = $stmt->fetchAll(PDO::FETCH_CLASS, Row::class);
 
-		if (!empty($class)) {
-			$class = '\\' . ltrim($class, '\\');
-
-			if (class_exists($class)) {
-				return $stmt->fetchAll(PDO::FETCH_CLASS, $class);
-			} else {
-				throw new Exception('Class "' . $class . '" does not exist.');
-			}
-		} else {
-			return $stmt->fetchAll(PDO::FETCH_OBJ);
-		}
+		return new Rows($rows);
 	}
 
 	/**
