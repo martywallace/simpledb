@@ -4,6 +4,8 @@ require('./vendor/autoload.php');
 
 use PHPUnit\Framework\TestCase;
 use SimpleDb\Database;
+use SimpleDb\Row;
+use SimpleDb\Rows;
 
 
 class SimpleDbTest extends TestCase {
@@ -16,20 +18,23 @@ class SimpleDbTest extends TestCase {
 	 * @depends testConnect
 	 */
 	public function testInsert(Database $db) {
-		$db->insert('users', ['name' => 'John', 'email' => 'example@example.com']);
+		$email = 'example@example.com';
 
-		$this->assertEquals($db->one('SELECT * FROM users WHERE email = ?', ['example@example.com'])->name, 'John');
+		$db->insert('users', ['name' => 'John', 'email' => $email]);
 
-		return 'example@example.com';
+		$this->assertEquals($db->table('users')->one($email, 'email')->name, 'John');
+
+		return $email;
 	}
 
 	/**
 	 * @depends testConnect
+	 * @depends testInsert
 	 */
-	public function testOne(Database $db) {
-		$record = $db->one('SELECT * FROM users');
+	public function testOne(Database $db, $email) {
+		$record = $db->table('users')->one($email, 'email');
 
-		$this->assertNotNull($record, null);
+		$this->assertTrue($record instanceof Row);
 	}
 
 	/**
@@ -38,7 +43,7 @@ class SimpleDbTest extends TestCase {
 	public function testAll(Database $db) {
 		$records = $db->all('SELECT * FROM users');
 
-		$this->assertTrue(is_array($records));
+		$this->assertTrue($records instanceof Rows);
 	}
 
 	/**

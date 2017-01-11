@@ -2,6 +2,12 @@
 
 use Exception;
 
+/**
+ * Utilities for this package.
+ *
+ * @package SimpleDb
+ * @author Marty Wallace
+ */
 class Utils {
 
 	/**
