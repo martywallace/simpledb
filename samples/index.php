@@ -39,7 +39,7 @@ class User extends Model {
 	
 	protected function relations() {
 		return [
-			'parent' => new HasOneRelation('parentId', 'users', 'id', User::class),
+			'parent' => new HasOneRelation(User::class, 'parentId'),
 			'children' => new HasManyRelation('id', 'users', 'childOf', User::class)
 		];
 	}
@@ -55,8 +55,5 @@ class Another extends Model {
 $db = new Database('root@localhost/test');
 
 $user = User::from($db->table('users')->one(7));
-$comp = $db->table('users')->one(7)->populate(User::class);
 
-var_dump($user->equalTo($comp));
-
-print_r($user);
+print_r($user->parent);
