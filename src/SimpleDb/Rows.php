@@ -3,8 +3,6 @@
 /**
  * A series of rows.
  *
- * @property-read Row[] $content The rows contained within this series.
- *
  * @package SimpleDb
  * @author Marty Wallace
  */
@@ -30,6 +28,6 @@ class Rows extends Series implements Populator {
 	 *
 	 * @return Row
 	 */
-	public function current() { return $this->content[$this->key()]; }
+	public function current() { return $this->content()[$this->key()]; }
 
 }

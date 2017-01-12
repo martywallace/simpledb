@@ -3,8 +3,6 @@
 /**
  * A series of Models.
  *
- * @property-read Model[] $content The models contained in this series.
- *
  * @package SimpleDb
  * @author Marty Wallace
  */
@@ -15,6 +13,6 @@ class Models extends Series {
 	 *
 	 * @return Model
 	 */
-	public function current() { return $this->content[$this->key()]; }
+	public function current() { return $this->content()[$this->key()]; }
 
 }

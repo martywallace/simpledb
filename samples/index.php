@@ -11,6 +11,7 @@ use SimpleDb\HasOneRelation;
 use SimpleDb\Row;
 use SimpleDb\Relation;
 use SimpleDb\HasManyRelation;
+use SimpleDb\Query;
 
 /**
  * @property-read int $id
@@ -25,6 +26,8 @@ use SimpleDb\HasManyRelation;
 class User extends Model {
 
 	protected function table() { return 'users'; }
+	protected function increments() { return 'id'; }
+	protected function unique() { return ['id']; }
 
 	protected function fields() {
 		return [
@@ -52,8 +55,13 @@ class Another extends Model {
 }
 
 
-$db = new Database('root@localhost/test');
+$db = new Database('root@localhost/test', true);
 
-$user = User::from($db->table('users')->one(7));
+$row = $db->table('users')->insert([
+	'name' => 'hi',
+	'email' => 'test@test.com'
+]);
 
-print_r($user->children);
+echo Query::select('test')->where(['id' => 1])->order(['id' => 'asc', 'name' => 'desc'])->limit(1);
+
+print_r($row);

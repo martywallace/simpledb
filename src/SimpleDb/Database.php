@@ -10,6 +10,7 @@ use Exception;
  *
  * @property-read PDO $pdo The PDO instance managing the connection internally.
  * @property-read string $lastInsertId The last ID inserted.
+ * @property-read string[] $prepared A list of all the prepared queries. This is only available in debug mode.
  *
  * @package SimpleDb
  * @author Marty Wallace
@@ -24,6 +25,12 @@ class Database {
 
 	/** @var Table[] */
 	private $_tables = [];
+
+	/** @var bool */
+	private $_debug = false;
+
+	/** @var string[] */
+	private $_prepared = [];
 
 	/**
 	 * Statically get the active Database instance.
@@ -44,11 +51,14 @@ class Database {
 	 * Database constructor.
 	 *
 	 * @param string $connection The connection string formatted username:password?@host/database.
+	 * @param bool $debug Whether or not to set up the connection in debug mode.
 	 *
 	 * @throws Exception If this is not the first instance of Database created.
 	 */
-	public function __construct($connection) {
+	public function __construct($connection, $debug = false) {
 		if (static::$_instance === null) {
+			$this->_debug = $debug;
+
 			$config = Utils::parseConnectionString($connection);
 			$this->_pdo = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['database'], $config['username'], $config['password']);
 
@@ -61,6 +71,7 @@ class Database {
 	public function __get($prop) {
 		if ($prop === 'pdo') return $this->_pdo;
 		if ($prop === 'lastInsertId') return $this->_pdo->lastInsertId();
+		if ($prop === 'prepared') return $this->_prepared;
 
 		return null;
 	}
@@ -68,18 +79,22 @@ class Database {
 	/**
 	 * Prepares a PDOStatement.
 	 *
-	 * @param string $query The query to prepare.
+	 * @param string|Query $query The query to prepare.
 	 *
 	 * @return PDOStatement
 	 */
 	public function prepare($query) {
+		$query = strval($query);
+
+		if ($this->_debug) $this->_prepared[] = $query;
+
 		return $this->_pdo->prepare($query);
 	}
 
 	/**
 	 * Prepare and execute a query, returning the PDOStatement that is created when preparing the query.
 	 *
-	 * @param string $query The query to execute.
+	 * @param string|Query $query The query to execute.
 	 * @param array|null $params Optional parameters to bind to the query.
 	 *
 	 * @return PDOStatement
@@ -101,7 +116,7 @@ class Database {
 	/**
 	 * Returns the first row provided by executing a query.
 	 *
-	 * @param string $query The query to execute.
+	 * @param string|Query $query The query to execute.
 	 * @param array|null $params Parameters to bind to the query.
 	 *
 	 * @return Row
@@ -110,13 +125,13 @@ class Database {
 	 * @throws Exception If the provided class does not exist.
 	 */
 	public function one($query, array $params = null) {
-		return $this->all($query, $params)->first;
+		return $this->all($query, $params)->first();
 	}
 
 	/**
 	 * Returns all rows provided by executing a query.
 	 *
-	 * @param string $query The query to execute.
+	 * @param string|Query $query The query to execute.
 	 * @param array|null $params Parameters to bind to the query.
 	 *
 	 * @return Rows
@@ -134,7 +149,7 @@ class Database {
 	/**
 	 * Returns the first value in the first column returned from executing a query.
 	 *
-	 * @param string $query The query to execute.
+	 * @param string|Query $query The query to execute.
 	 * @param array|null $params Parameters to bind to the query.
 	 * @param mixed $fallback A fallback value to use if no results were returned by the query.
 	 *
@@ -150,34 +165,6 @@ class Database {
 		}
 
 		return $fallback;
-	}
-
-	/**
-	 * Delete a row from a table.
-	 *
-	 * @param string $table The table to delete from.
-	 * @param mixed $primary The primary key value.
-	 * @param string $primaryColumn The name of the primary key column.
-	 *
-	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
-	 */
-	public function delete($table, $primary, $primaryColumn = 'id') {
-		$this->query('DELETE FROM ' . $table . ' WHERE ' . $primaryColumn . ' = ?', [$primary]);
-	}
-
-	/**
-	 * Insert a new row into a target table.
-	 *
-	 * @param string $table The table to insert data into.
-	 * @param array $data The data to insert.
-	 *
-	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
-	 */
-	public function insert($table, array $data) {
-		$columns = array_keys($data);
-		$placeholders = array_fill(0, count($data), '?');
-
-		$this->query('INSERT INTO ' . $table . '(' . implode(', ', $columns) . ') VALUES(' . implode(', ', $placeholders) . ')', array_values($data));
 	}
 
 	/**

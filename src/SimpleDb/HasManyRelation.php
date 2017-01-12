@@ -41,7 +41,7 @@ class HasManyRelation extends Relation {
 	 */
 	public function fetch(Model $model) {
 		if (method_exists($this->_model, 'getTable')) {
-			$rows = Database::get()->all('SELECT * FROM ' . call_user_func(array($this->_model, 'getTable')) . ' WHERE ' . $this->_foreign . ' = ?', [$model->get($this->_local)]);
+			$rows = Database::get()->all('SELECT * FROM ' . call_user_func(array($this->_model, 'getTable')) . ' WHERE ' . $this->_foreign . ' = ?', [$model->getFieldValue($this->_local)]);
 			return $rows->populate($this->_model);
 		} else {
 			throw new Exception('Could not determine the table name of the foreign model - ensure the provided model inherits SimpleDb\Model.');

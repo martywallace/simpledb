@@ -41,7 +41,7 @@ class HasOneRelation extends Relation {
 	 */
 	public function fetch(Model $model) {
 		if (method_exists($this->_model, 'getTable')) {
-			$row = Database::get()->table(call_user_func(array($this->_model, 'getTable')))->one($model->get($this->_local), $this->_foreign);
+			$row = Database::get()->table(call_user_func(array($this->_model, 'getTable')))->one($model->getFieldValue($this->_local), $this->_foreign);
 			return empty($row) ? null : $row->populate($this->_model);
 		} else {
 			throw new Exception('Could not determine the table name of the foreign model - ensure the provided model inherits SimpleDb\Model.');

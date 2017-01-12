@@ -6,10 +6,6 @@ use ArrayAccess;
 /**
  * A series of iterable data.
  *
- * @property-read mixed[] $content The contents of this series.
- * @property-read Row $first The first item in this series.
- * @property-read int $count The amount of items in this series.
- *
  * @package SimpleDb
  * @author Marty Wallace
  */
@@ -25,12 +21,31 @@ abstract class Series implements Iterator, ArrayAccess {
 		$this->_content = $content;
 	}
 
-	public function __get($prop) {
-		if ($prop === 'content') return $this->_content;
-		if ($prop === 'first') return count($this->_content) > 0 ? $this->_content[0] : null;
-		if ($prop === 'count') return count($this->_content);
+	/**
+	 * Gets the content of this series.
+	 *
+	 * @return mixed[]
+	 */
+	public function content() {
+		return $this->_content;
+	}
 
-		return null;
+	/**
+	 * The first item in this series.
+	 *
+	 * @return mixed
+	 */
+	public function first() {
+		return count($this->_content) > 0 ? $this->_content[0] : null;
+	}
+
+	/**
+	 * The amount of items in this series.
+	 *
+	 * @return int
+	 */
+	public function count() {
+		return count($this->_content);
 	}
 
 	/**

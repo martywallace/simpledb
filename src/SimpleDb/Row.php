@@ -5,9 +5,6 @@ use Exception;
 /**
  * A single row from a database query.
  *
- * @property-read string[] $columns The column names bound to this row.
- * @property-read mixed[] $data The row data as a simple PHP array.
- *
  * @package SimpleDb
  * @author Marty Wallace
  */
@@ -25,6 +22,24 @@ class Row implements Populator {
 	}
 
 	/**
+	 * Get the column names attached to this row.
+	 *
+	 * @return string[]
+	 */
+	public function getColumns() {
+		return array_keys($this->_data);
+	}
+
+	/**
+	 * Get the data attached to this row.
+	 *
+	 * @return string[]
+	 */
+	public function getData() {
+		return $this->_data;
+	}
+
+	/**
 	 * Populate a model with data from this row.
 	 *
 	 * @param string $class The name of the class to construct and populate.
@@ -36,7 +51,7 @@ class Row implements Populator {
 	 */
 	public function populate($class) {
 		if (class_exists($class)) {
-			$model = new $class($this->data);
+			$model = new $class($this->_data);
 
 			if ($model instanceof Model) {
 				return $model;
@@ -46,13 +61,6 @@ class Row implements Populator {
 		} else {
 			throw new Exception('Class "' . $class . '" does not exist.');
 		}
-	}
-
-	public function __get($prop) {
-		if ($prop === 'columns') return array_keys($this->_data);
-		if ($prop === 'data') return $this->_data;
-
-		return null;
 	}
 
 }
