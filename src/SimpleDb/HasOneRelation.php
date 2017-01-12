@@ -29,7 +29,16 @@ class HasOneRelation extends Relation {
 		$this->_local = $local;
 		$this->_foreign = $foreign;
 	}
-	
+
+	/**
+	 * Fetch the related data.
+	 *
+	 * @param Model $model The model who the related data is attached to.
+	 *
+	 * @return Model
+	 *
+	 * @throws Exception If the table name of the foreign model could not be determined.
+	 */
 	public function fetch(Model $model) {
 		if (method_exists($this->_model, 'getTable')) {
 			$row = Database::get()->table(call_user_func(array($this->_model, 'getTable')))->one($model->get($this->_local), $this->_foreign);

@@ -40,7 +40,7 @@ class User extends Model {
 	protected function relations() {
 		return [
 			'parent' => new HasOneRelation(User::class, 'parentId'),
-			'children' => new HasManyRelation('id', 'users', 'childOf', User::class)
+			'children' => new HasManyRelation(User::class, 'childOf')
 		];
 	}
 
@@ -56,4 +56,4 @@ $db = new Database('root@localhost/test');
 
 $user = User::from($db->table('users')->one(7));
 
-print_r($user->parent);
+print_r($user->children);
