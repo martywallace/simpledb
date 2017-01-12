@@ -1,6 +1,6 @@
 <?php namespace SimpleDb;
 
-class SingleRelation extends Relation {
+class HasOneRelation extends Relation {
 
 	private $_localColumn;
 	private $_externalTable;

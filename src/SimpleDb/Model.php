@@ -11,6 +11,45 @@ use JsonSerializable;
  */
 abstract class Model implements JsonSerializable {
 
+	/** @var Model[] */
+	private static $_definitions = [];
+
+	/** @return Model */
+	private static function _getDefinition() {
+		if (!array_key_exists(static::class, self::$_definitions)) {
+			self::$_definitions[static::class] = new static();
+		}
+
+		return self::$_definitions[static::class];
+	}
+
+	/**
+	 * Statically get the {@link Model::table() table name} associated with this model.
+	 *
+	 * @return string
+	 */
+	public static function getTable() {
+		return static::_getDefinition()->table();
+	}
+
+	/**
+	 * Statically get the {@link Model::fields() fields} associated with this model.
+	 *
+	 * @return string[]
+	 */
+	public static function getFields() {
+		return static::_getDefinition()->fields();
+	}
+
+	/**
+	 * Statically get the {@link Model::relations() relations} associated with this model.
+	 *
+	 * @return Relation[]
+	 */
+	public static function getRelations() {
+		return static::_getDefinition()->relations();
+	}
+
 	/** @var string[] */
 	private $_fields = [];
 
@@ -22,6 +61,13 @@ abstract class Model implements JsonSerializable {
 
 	/** @var Relation[] */
 	private $_relations = [];
+
+	/**
+	 * The name of the table that this model belongs to.
+	 *
+	 * @return string
+	 */
+	abstract protected function table();
 
 	/**
 	 * Return an array of fields that this model should handle. The keys of the returned array should be the names of
@@ -38,7 +84,7 @@ abstract class Model implements JsonSerializable {
 	/**
 	 * Returns an array of relations that this model has to other models.
 	 *
-	 * @return array[]
+	 * @return Relation[]
 	 */
 	protected function relations() {
 		return [];
@@ -104,6 +150,28 @@ abstract class Model implements JsonSerializable {
 	}
 
 	/**
+	 * Determine whether the values associated with {@link Model::fields() declared fields} in this model are equal to
+	 * those of the values in another model. The model types must also match.
+	 *
+	 * @param Model $model The model to compare against.
+	 *
+	 * @return bool
+	 */
+	public function equalTo(Model $model) {
+		if (!is_a($model, static::class)) {
+			return false;
+		}
+
+		$compareData = $model->getPrimitiveData();
+
+		foreach ($this->getPrimitiveData() as $field => $value) {
+			if ($compareData[$field] !== $value) return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Gets a value from this model. If the value is associated with the {@link Model::fields() declared fields} for
 	 * this model, the value is {@link Field::toRefined() refined} first.
 	 *
@@ -133,18 +201,39 @@ abstract class Model implements JsonSerializable {
 	/**
 	 * Determine whether this model has a field in the list of {@link Model::fields() declared fields}.
 	 *
-	 * @param string $field The field to check for.
+	 * @param string $name The name of the field.
 	 *
 	 * @return bool
 	 */
-	public function hasField($field) {
-		return array_key_exists($field, $this->fields());
+	public function hasField($name) {
+		return array_key_exists($name, $this->_fields);
 	}
 
+	/**
+	 * Determine whether this model has a relation in the list of {@link Model::relations() declared relations}.
+	 *
+	 * @param string $name The name of the relation.
+	 *
+	 * @return bool
+	 */
+	public function hasRelation($name) {
+		return array_key_exists($name, $this->_relations);
+	}
+
+	/**
+	 * Get the {@link Field::toPrimitive() primitive} data associated with declared fields in this model.
+	 *
+	 * @return mixed[]
+	 */
 	public function getPrimitiveData() {
 		return $this->_data;
 	}
 
+	/**
+	 * Get the {@link Field::toRefined() refined} data associated with declared fields in this model.
+	 *
+	 * @return mixed[]
+	 */
 	public function getRefinedData() {
 		$data = [];
 
