@@ -62,8 +62,8 @@ class SimpleDbTest extends TestCase {
 			Query::select('users')->compile(),
 			Query::select('users', ['name', 'email'])->compile(),
 			Query::select('users')->limit(1)->compile(),
-			Query::select('users')->where(['id' => 1, 'name' => 'Steve'])->compile(),
-			Query::select('users')->where(['email' => 'test@test.com'])->order('id', 'asc')->limit(5, 10)->compile(),
+			Query::select('users')->where(['id', 'name'])->compile(),
+			Query::select('users')->where(['email'])->order('id', 'asc')->limit(5, 10)->compile(),
 			Query::select('users', 'email')->order(['email' => 'desc', 'id' => 'asc'])->compile()
 		];
 
@@ -80,7 +80,7 @@ class SimpleDbTest extends TestCase {
 	public function testBuildDeleteQuery() {
 		$examples = [
 			Query::delete('users')->compile(),
-			Query::delete('users')->where(['id' => 1]),
+			Query::delete('users')->where(['id']),
 			Query::delete('users')->limit(7)
 		];
 

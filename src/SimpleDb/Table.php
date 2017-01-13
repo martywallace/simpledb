@@ -37,6 +37,10 @@ class Table {
 		return $this->{$prop} !== null;
 	}
 
+	public function __toString() {
+		return $this->_name;
+	}
+
 	/**
 	 * Perform a DESCRIBE on this table and return the described {@link Column columns}.
 	 * 
@@ -115,7 +119,7 @@ class Table {
 	 * @return Row
 	 */
 	public function one(array $criteria) {
-		return Database::get()->one(Query::select($this->_name)->where($criteria)->limit(1), array_values($criteria));
+		return Database::get()->one(Query::select($this->_name)->where(array_keys($criteria))->limit(1), array_values($criteria));
 	}
 
 	/**
@@ -144,24 +148,25 @@ class Table {
 	 * @param array $criteria Optional WHERE criteria.
 	 */
 	public function delete(array $criteria = []) {
-		Database::get()->query(Query::delete($this->_name)->where($criteria), array_values($criteria));
+		Database::get()->query(Query::delete($this->_name)->where(array_keys($criteria)), array_values($criteria));
 	}
 
 	/**
 	 * Insert data into this table.
 	 *
 	 * @param array $data The data to insert.
+	 * @param array $update If provided, create an ON DUPLICATE KEY UPDATE for these columns.
 	 *
 	 * @return int If this table has an auto-incrementing column, return the value of the last inserted value.
 	 */
-	public function insert(array $data) {
+	public function insert(array $data, array $update = []) {
 		$insert = [];
 
 		foreach ($data as $key => $value) {
 			$insert[':' . $key] = $value;
 		}
 
-		Database::get()->query(Query::insert($this->_name, array_keys($data)), $insert);
+		Database::get()->query(Query::insert($this->_name, array_keys($data), $update), $insert);
 
 		$lastId = Database::get()->lastInsertId;
 

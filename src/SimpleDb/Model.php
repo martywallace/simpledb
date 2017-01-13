@@ -227,18 +227,21 @@ abstract class Model implements JsonSerializable {
 	}
 
 	/**
-	 * Save this model in the database. If an {@link Model::increments() incrementing} column is defined, the value of
-	 * {@link Database::lastInsertId} will be assigned to the relevant field in this model after a successful save if
-	 * the current value for that field on this model is empty.
+	 * Save this model in the database. If a {@link Model::getIncrementingField() incrementing field} is available and
+	 * the value of that fields on this model is empty, the value of {@link Database::lastInsertId} will be assigned to
+	 * it.
+	 *
+	 * @param bool $updateOnDuplicateKey Whether or not a duplicate record in the database should be updated with the
+	 * new information in this model. This appends an ON DUPLICATE KEY UPDATE statement and includes fields that are
+	 * {@link Model::getNonUniqueFields() not unique} only.
 	 */
-	public function save() {
-		Database::get()->table($this->table())->insert($this->getPrimitiveData());
+	public function save($updateOnDuplicateKey = true) {
+		$increment = static::getTable()->insert($this->getPrimitiveData(), $updateOnDuplicateKey ? static::getNonUniqueFields() : []);
+		$increments = static::getIncrementingField();
 
-		/*
-		if (!empty($this->increments()) && empty($this->getFieldValue($this->increments()))) {
-			$this->setFieldValue($this->increments(), Database::get()->lastInsertId);
+		if (!empty($increments) && empty($this->getFieldValue($increments))) {
+			$this->setFieldValue($increments, $increment);
 		}
-		*/
 	}
 
 	/**

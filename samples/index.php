@@ -63,9 +63,8 @@ class Another extends Model {
 
 $db = new Database('root@localhost/test', true);
 
-$id = $db->table('users')->insert([
-	//'id' => 65,
-	'email' => 'marty@martywallace.com'
-]);
+$user = $db->table('users')->one(['id' => 17])->populate(User::class);
+$user->name = 'Hahaha';
+$user->save();
 
-print_r($id);
+print_r($db->prepared);

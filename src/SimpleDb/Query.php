@@ -111,17 +111,13 @@ class Query {
 	/**
 	 * Append a WHERE statement to match against an input list of values.
 	 *
-	 * @param array $criteria The search criteria.
+	 * @param string|string[] $columns The columns to add WHERE, WHERE AND statements for with ? placeholders.
 	 *
 	 * @return $this
 	 */
-	public function where(array $criteria = []) {
-		foreach ($criteria as $field => $value) {
-			if (count($this->_query['where']) === 0) {
-				$this->_query['where'][] = 'WHERE ' . $field . ' = ?';
-			} else {
-				$this->_query['where'][] = 'AND ' . $field . ' = ?';
-			}
+	public function where($columns) {
+		foreach ($columns as $column) {
+			$this->_query['where'][] = (count($this->_query['where']) === 0 ? 'WHERE ' : 'AND ') . $column . ' = ?';
 		}
 
 		return $this;
