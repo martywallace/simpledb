@@ -2,8 +2,6 @@
 
 use DateTime;
 use Exception;
-use JsonSerializable;
-use stdClass;
 
 /**
  * Encapsulates functionality that deals with model fields.
@@ -43,6 +41,8 @@ class Field {
 	 * @param string $type The type associated with the value.
 	 *
 	 * @return mixed
+	 *
+	 * @throws Exception If any errors were encountered attempting to convert the value.
 	 */
 	public static function toPrimitive($value, $type) {
 		if (!is_string($value)) {

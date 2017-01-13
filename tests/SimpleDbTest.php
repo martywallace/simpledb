@@ -20,9 +20,9 @@ class SimpleDbTest extends TestCase {
 	public function testInsert(Database $db) {
 		$email = 'example@example.com';
 
-		$db->insert('users', ['name' => 'John', 'email' => $email]);
+		$db->table('users')->insert(['name' => 'John', 'email' => $email]);
 
-		$this->assertEquals($db->table('users')->one($email, 'email')->name, 'John');
+		$this->assertEquals($db->table('users')->one(['email' => $email])->name, 'John');
 
 		return $email;
 	}
@@ -32,7 +32,7 @@ class SimpleDbTest extends TestCase {
 	 * @depends testInsert
 	 */
 	public function testOne(Database $db, $email) {
-		$record = $db->table('users')->one($email, 'email');
+		$record = $db->table('users')->one(['email' => $email]);
 
 		$this->assertTrue($record instanceof Row);
 	}
@@ -41,7 +41,7 @@ class SimpleDbTest extends TestCase {
 	 * @depends testConnect
 	 */
 	public function testAll(Database $db) {
-		$records = $db->all('SELECT * FROM users');
+		$records = $db->table('users')->all();
 
 		$this->assertTrue($records instanceof Rows);
 	}
@@ -51,9 +51,9 @@ class SimpleDbTest extends TestCase {
 	 * @depends testInsert
 	 */
 	public function testDelete(Database $db, $email) {
-		$db->delete('users', $email, 'email');
+		$db->table('users')->delete(['email' => $email]);
 
-		$this->assertNull($db->one('SELECT * FROM users WHERE email = ?', [$email]));
+		$this->assertNull($db->table('users')->one(['email' => $email]));
 	}
 
 }

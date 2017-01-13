@@ -9,7 +9,7 @@ use Exception;
  * Provides access to a database.
  *
  * @property-read PDO $pdo The PDO instance managing the connection internally.
- * @property-read string $lastInsertId The last ID inserted.
+ * @property-read int $lastInsertId The last ID inserted.
  * @property-read string[] $prepared A list of all the prepared queries. This is only available in debug mode.
  *
  * @package SimpleDb
@@ -22,6 +22,8 @@ class Database {
 
 	/** @var PDO */
 	private $_pdo = null;
+
+	private $_connection = [];
 
 	/** @var Table[] */
 	private $_tables = [];
@@ -59,8 +61,8 @@ class Database {
 		if (static::$_instance === null) {
 			$this->_debug = $debug;
 
-			$config = Utils::parseConnectionString($connection);
-			$this->_pdo = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['database'], $config['username'], $config['password']);
+			$this->_connection = Utils::parseConnectionString($connection);
+			$this->_pdo = new PDO('mysql:host=' . $this->_connection['host'] . ';dbname=' . $this->_connection['database'], $this->_connection['username'], $this->_connection['password']);
 
 			static::$_instance = $this;
 		} else {
@@ -70,7 +72,7 @@ class Database {
 
 	public function __get($prop) {
 		if ($prop === 'pdo') return $this->_pdo;
-		if ($prop === 'lastInsertId') return $this->_pdo->lastInsertId();
+		if ($prop === 'lastInsertId') return intval($this->_pdo->lastInsertId());
 		if ($prop === 'prepared') return $this->_prepared;
 
 		return null;
@@ -168,15 +170,35 @@ class Database {
 	}
 
 	/**
+	 * Return all tables in this database.
+	 *
+	 * @return Table[]
+	 */
+	public function getTables() {
+		// TODO: Going through information_schema is a more efficient way to do this, just certain what the implications
+		// are at the stage (whether it's common to have full access to it, etc).
+		if (empty($this->_tables)) {
+			foreach ($this->all(Query::showTables()) as $row) {
+				$name = $row->{'Tables_in_' . $this->_connection['database']};
+				$this->_tables[$name] = new Table($name);
+			}
+		}
+		
+		return $this->_tables;
+	}
+
+	/**
 	 * Return a Table instance for a specific table.
 	 *
 	 * @param string $name The name of the table.
 	 *
 	 * @return Table
+	 *
+	 * @throws Exception If the table does not exist.
 	 */
 	public function table($name) {
-		if (!array_key_exists($name, $this->_tables)) {
-			$this->_tables[$name] = new Table($name);
+		if (!array_key_exists($name, $this->getTables())) {
+			throw new Exception('Table "' . $name . '" does not exist.');
 		}
 
 		return $this->_tables[$name];

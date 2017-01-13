@@ -67,6 +67,15 @@ class Query {
 		return new Query('DESCRIBE ' . $table);
 	}
 
+	/**
+	 * Create a SHOW TABLES query.
+	 *
+	 * @return Query
+	 */
+	public static function showTables() {
+		return new Query('SHOW TABLES');
+	}
+
 	/** @var string[] */
 	private $_query = [
 		'operation' => [],

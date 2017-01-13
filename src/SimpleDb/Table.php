@@ -13,7 +13,7 @@ use Exception;
 class Table {
 
 	/** @var string */
-	private $_name;
+	private $_name = null;
 
 	/** @var Column[] */
 	private $_columns = [];
@@ -108,7 +108,7 @@ class Table {
 	}
 
 	/**
-	 * Return one row from this table using its primary key.
+	 * Return one row from this table using search criteria.
 	 *
 	 * @param array $criteria An array of fields mapped to values to search for.
 	 *
@@ -148,11 +148,11 @@ class Table {
 	}
 
 	/**
-	 * Insert data into this table and return a Row representing that data if the insertion was successful.
+	 * Insert data into this table.
 	 *
 	 * @param array $data The data to insert.
 	 *
-	 * @return Row
+	 * @return int If this table has an auto-incrementing column, return the value of the last inserted value.
 	 */
 	public function insert(array $data) {
 		$insert = [];
@@ -161,7 +161,11 @@ class Table {
 			$insert[':' . $key] = $value;
 		}
 
-		Database::get()->query(Query::insert($this->_name, $data), $insert);
+		Database::get()->query(Query::insert($this->_name, array_keys($data)), $insert);
+
+		$lastId = Database::get()->lastInsertId;
+
+		return !empty($this->getIncrementingColumn()) ? $lastId : null;
 	}
 
 }
