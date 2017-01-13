@@ -39,21 +39,32 @@ class Query {
 	 * Create a new INSERT query.
 	 *
 	 * @param string $table The table name.
-	 * @param array $data The data to insert.
-	 * @param array $update If provided, create an ON DUPLICATE KEY UPDATE for these fields.
+	 * @param array $columns The columns to insert data for.
+	 * @param array $update If provided, create an ON DUPLICATE KEY UPDATE for these columns.
 	 *
 	 * @return Query
 	 */
-	public static function insert($table, array $data, array $update = []) {
-		$values = array_map(function($key) { return ':' . $key; }, array_keys($data));
-		$base = 'INSERT INTO ' . $table . ' (' . implode(', ', array_keys($data)) . ') VALUES(' . implode(', ', $values) . ')';
+	public static function insert($table, array $columns, array $update = []) {
+		$values = array_map(function($column) { return ':' . $column; }, $columns);
+		$base = 'INSERT INTO ' . $table . ' (' . implode(', ', $columns) . ') VALUES(' . implode(', ', $values) . ')';
 
 		if (!empty($update)) {
-			$updates = array_map(function($key) { return $key . ' = :' . $key; }, array_keys($update));
+			$updates = array_map(function($column) { return $column . ' = :' . $column; }, $update);
 			$base .= ' ON DUPLICATE KEY UPDATE ' . implode(', ', $updates);
 		}
 
 		return new Query($base);
+	}
+
+	/**
+	 * Create a new DESCRIBE query.
+	 *
+	 * @param string $table The table to describe.
+	 *
+	 * @return Query
+	 */
+	public static function describe($table) {
+		return new Query('DESCRIBE ' . $table);
 	}
 
 	/** @var string[] */

@@ -24,39 +24,30 @@ abstract class Model implements JsonSerializable {
 	}
 
 	/**
-	 * Statically get the {@link Model::table() table name} associated with this model.
+	 * Get the {@link Table} associated with this model using its {@link Model::table() table name}.
 	 *
-	 * @return string
+	 * @return Table
 	 */
 	public static function getTable() {
-		return static::_getDefinition()->table();
+		return Database::get()->table(static::_getDefinition()->table());
 	}
 
 	/**
-	 * Statically get the name of the column that {@link Model::increments() auto-increments}.
-	 *
-	 * @return string
-	 */
-	public static function getIncrements() {
-		return static::_getDefinition()->increments();
-	}
-
-	/**
-	 * Statically get the names of the columns {@link Model::unique() marked unique} for this model.
-	 *
-	 * @return string[]
-	 */
-	public static function getUnique() {
-		return static::_getDefinition()->unique();
-	}
-
-	/**
-	 * Statically get the {@link Model::fields() fields} associated with this model.
+	 * Get the {@link Model::fields() fields} associated with this model.
 	 *
 	 * @return string[]
 	 */
 	public static function getFields() {
 		return static::_getDefinition()->fields();
+	}
+
+	/**
+	 * Get the primary fields.
+	 *
+	 * @return string[]
+	 */
+	public static function getPrimaryFields() {
+		return array_map(function(Column $column) { return $column->name; }, static::getTable()->getPrimaryColumns());
 	}
 
 	/**
@@ -68,17 +59,11 @@ abstract class Model implements JsonSerializable {
 		return static::_getDefinition()->relations();
 	}
 
-	/** @var string[] */
-	private $_fields = [];
-
 	/** @var mixed[] */
 	private $_data = [];
 
 	/** @var mixed[] */
 	private $_unknown = [];
-
-	/** @var Relation[] */
-	private $_relations = [];
 
 	/**
 	 * The name of the table that this model belongs to.
@@ -86,24 +71,6 @@ abstract class Model implements JsonSerializable {
 	 * @return string
 	 */
 	abstract protected function table();
-
-	/**
-	 * The name of a column that auto-increments.
-	 *
-	 * @return string
-	 */
-	protected function increments() {
-		return null;
-	}
-
-	/**
-	 * An array containing the names of all unique columns for this model.
-	 *
-	 * @return string[]
-	 */
-	protected function unique() {
-		return [];
-	}
 
 	/**
 	 * Return an array of fields that this model should handle. The keys of the returned array should be the names of
@@ -141,28 +108,19 @@ abstract class Model implements JsonSerializable {
 	 * @param array $data Optional initial data to fill this model with.
 	 *
 	 * @throws Exception If a relation conflicts with a field.
-	 * @throws Exception If an {@link Model::increments() incrementing} field is not explicitly declared as
-	 * {@link Model::unique() unique}.
 	 */
 	public function __construct(array $data = []) {
-		$this->_fields = $this->fields();
-		$this->_relations = $this->relations();
-
-		foreach ($this->_relations as $name => $relation) {
+		foreach ($this->relations() as $name => $relation) {
 			if (!($relation instanceof Relation)) {
 				throw new Exception('Relation "' . $name . '" must inherit SimpleDb\Relation.');
 			}
 
 			if ($this->hasField($name)) {
-				throw new Exception('Cannot declare relation "' . $name . '" on "' . get_class($this) . '" - a field with the same name already exists.');
+				throw new Exception('Cannot declare relation "' . $name . '" on "' . static::class . '" - a field with the same name already exists.');
 			}
 		}
 
-		if (!empty($this->increments()) && !in_array($this->increments(), $this->unique())) {
-			throw new Exception('Field "' . $this->increments() . '" is marked as incrementing but does not appear in the list of unique columns. Incrementing columns must be unique.');
-		}
-
-		foreach ($this->_fields as $field => $type) {
+		foreach ($this->fields() as $field => $type) {
 			$this->_data[$field] = null;
 		}
 
@@ -170,7 +128,7 @@ abstract class Model implements JsonSerializable {
 	}
 
 	public function __get($prop) {
-		if (array_key_exists($prop, $this->_relations)) {
+		if (array_key_exists($prop, $this->relations())) {
 			return $this->getRelated($prop);
 		}
 
@@ -182,7 +140,7 @@ abstract class Model implements JsonSerializable {
 	}
 
 	public function __isset($prop) {
-		return array_key_exists($prop, $this->_data) || array_key_exists($prop, $this->_unknown) || array_key_exists($prop, $this->_relations);
+		return array_key_exists($prop, $this->_data) || array_key_exists($prop, $this->_unknown) || array_key_exists($prop, $this->relations());
 	}
 
 	/**
@@ -206,7 +164,7 @@ abstract class Model implements JsonSerializable {
 	 * @return bool
 	 */
 	public function equalTo(Model $model) {
-		if (!is_a($model, get_class($this))) {
+		if (!is_a($model, static::class)) {
 			return false;
 		}
 
@@ -227,9 +185,11 @@ abstract class Model implements JsonSerializable {
 	public function save() {
 		Database::get()->table($this->table())->insert($this->getPrimitiveData());
 
+		/*
 		if (!empty($this->increments()) && empty($this->getFieldValue($this->increments()))) {
 			$this->setFieldValue($this->increments(), Database::get()->lastInsertId);
 		}
+		*/
 	}
 
 	/**
@@ -241,7 +201,7 @@ abstract class Model implements JsonSerializable {
 	 * @return mixed
 	 */
 	public function getFieldValue($field) {
-		if ($this->hasField($field) && array_key_exists($field, $this->_data)) return Field::toRefined($this->_data[$field], $this->_fields[$field]);
+		if ($this->hasField($field) && array_key_exists($field, $this->_data)) return Field::toRefined($this->_data[$field], $this->fields()[$field]);
 		else if (array_key_exists($field, $this->_unknown)) return $this->_unknown[$field];
 
 		return null;
@@ -255,7 +215,7 @@ abstract class Model implements JsonSerializable {
 	 * @param mixed $value The value to allocate to the field.
 	 */
 	public function setFieldValue($field, $value) {
-		if ($this->hasField($field)) $this->_data[$field] = Field::toPrimitive($value, $this->_fields[$field]);
+		if ($this->hasField($field)) $this->_data[$field] = Field::toPrimitive($value, $this->fields()[$field]);
 		else $this->_unknown[$field] = $value;
 	}
 
@@ -267,7 +227,7 @@ abstract class Model implements JsonSerializable {
 	 * @return bool
 	 */
 	public function hasField($name) {
-		return array_key_exists($name, $this->_fields);
+		return array_key_exists($name, $this->fields());
 	}
 
 	/**
@@ -281,10 +241,10 @@ abstract class Model implements JsonSerializable {
 	 */
 	public function getRelation($name) {
 		if (!$this->hasRelation($name)) {
-			throw new Exception('Relation "' . $name . '" does not exist on model "' . get_class($this) . '".');
+			throw new Exception('Relation "' . $name . '" does not exist on model "' . static::class . '".');
 		}
 
-		return $this->_relations[$name];
+		return $this->relations()[$name];
 	}
 
 	/**
@@ -295,7 +255,7 @@ abstract class Model implements JsonSerializable {
 	 * @return bool
 	 */
 	public function hasRelation($name) {
-		return array_key_exists($name, $this->_relations);
+		return array_key_exists($name, $this->relations());
 	}
 
 	/**
@@ -308,6 +268,24 @@ abstract class Model implements JsonSerializable {
 	}
 
 	/**
+	 * Get {@link Field::toPrimitive() primitive} data for the unique fields in this model.
+	 *
+	 * @return string[]
+	 */
+	public function getUniquePrimitiveData() {
+		return array_filter($this->getPrimitiveData(), function($key) { return in_array($key, $this->unique()); }, ARRAY_FILTER_USE_KEY);
+	}
+
+	/**
+	 * Get {@link Field::toPrimitive() primitive} data for the non-unique fields in this model.
+	 *
+	 * @return string[]
+	 */
+	public function getNonUniquePrimitiveData() {
+		return array_filter($this->getPrimitiveData(), function($key) { return !in_array($key, $this->unique()); }, ARRAY_FILTER_USE_KEY);
+	}
+
+	/**
 	 * Get the {@link Field::toRefined() refined} data associated with declared fields in this model.
 	 *
 	 * @return mixed[]
@@ -315,11 +293,29 @@ abstract class Model implements JsonSerializable {
 	public function getRefinedData() {
 		$data = [];
 
-		foreach ($this->_fields as $field => $type) {
+		foreach ($this->fields() as $field => $type) {
 			$data[$field] = Field::toRefined($this->getFieldValue($field), $type);
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Get {@link Field::toRefined() refined} data for the unique fields in this model.
+	 *
+	 * @return mixed[]
+	 */
+	public function getUniqueRefinedData() {
+		return array_filter($this->getRefinedData(), function($key) { return in_array($key, $this->unique()); }, ARRAY_FILTER_USE_KEY);
+	}
+
+	/**
+	 * Get {@link Field::toRefined() refined} data for the non-unique fields in this model.
+	 *
+	 * @return mixed[]
+	 */
+	public function getNonUniqueRefinedData() {
+		return array_filter($this->getRefinedData(), function($key) { return !in_array($key, $this->unique()); }, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
@@ -332,8 +328,8 @@ abstract class Model implements JsonSerializable {
 	 * @throws Exception If the relation name is unknown.
 	 */
 	public function getRelated($name) {
-		if (array_key_exists($name, $this->_relations)) {
-			return $this->_relations[$name]->fetch($this);
+		if (array_key_exists($name, $this->relations())) {
+			return $this->relations()[$name]->fetch($this);
 		} else {
 			throw new Exception('Unknown relation "' . $name . '".');
 		}

@@ -26,8 +26,6 @@ use SimpleDb\Query;
 class User extends Model {
 
 	protected function table() { return 'users'; }
-	protected function increments() { return 'id'; }
-	protected function unique() { return ['id']; }
 
 	protected function fields() {
 		return [
@@ -50,18 +48,33 @@ class User extends Model {
 }
 
 class Another extends Model {
-	protected function table() { return 'test'; }
+
+	protected function table() { return 'another'; }
 	protected function fields() { return []; }
+
 }
 
+//print_r(User::getNonUnique());
 
 $db = new Database('root@localhost/test', true);
 
+/*
 $row = $db->table('users')->insert([
 	'name' => 'hi',
 	'email' => 'test@test.com'
 ]);
+*/
 
-echo Query::select('test')->where(['id' => 1])->order(['id' => 'asc', 'name' => 'desc'])->limit(1);
+$user = new User();
 
-print_r($row);
+print_r(Another::getPrimaryFields());
+
+//$user = $db->table('users')->one(['id' => 17])->populate(User::class);
+
+//var_dump($user->getUniquePrimitiveData());
+
+//echo Query::select('test')->where(['id' => 1])->order(['id' => 'asc', 'name' => 'desc'])->limit(1);
+
+//echo Query::insert('test', User::getFields(), User::getNonUnique());
+
+//print_r($db->table('users')->describe());
