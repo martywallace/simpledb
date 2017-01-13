@@ -49,8 +49,13 @@ class User extends Model {
 
 class Another extends Model {
 
+	protected function fields() {
+		return [
+			'two' => 'int'
+		];
+	}
+
 	protected function table() { return 'another'; }
-	protected function fields() { return []; }
 
 }
 
@@ -67,7 +72,7 @@ $row = $db->table('users')->insert([
 
 $user = new User();
 
-print_r(Another::getPrimaryFields());
+var_dump($user->getUniqueRefinedData());
 
 //$user = $db->table('users')->one(['id' => 17])->populate(User::class);
 

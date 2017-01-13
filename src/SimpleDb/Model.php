@@ -33,25 +33,74 @@ abstract class Model implements JsonSerializable {
 	}
 
 	/**
-	 * Get the {@link Model::fields() fields} associated with this model.
+	 * Get the {@link Model::fields() fields associated} with this model.
 	 *
 	 * @return string[]
 	 */
 	public static function getFields() {
-		return static::_getDefinition()->fields();
+		return array_keys(static::_getDefinition()->fields());
 	}
 
 	/**
-	 * Get the primary fields.
+	 * Get the type associated with a {@link Model::fields() declared field}.
+	 *
+	 * @param string $field The field name.
+	 *
+	 * @return string
+	 */
+	public static function getFieldType($field) {
+		foreach (static::_getDefinition()->fields() as $name => $type) {
+			if ($name === $field) return $type;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get the primary {@link Model::fields() declared fields}.
 	 *
 	 * @return string[]
 	 */
 	public static function getPrimaryFields() {
-		return array_map(function(Column $column) { return $column->name; }, static::getTable()->getPrimaryColumns());
+		$columns = array_map(function(Column $column) { return $column->name; }, static::getTable()->getPrimaryColumns());
+		return array_intersect($columns, static::getFields());
 	}
 
 	/**
-	 * Statically get the {@link Model::relations() relations} associated with this model.
+	 * Get the field that auto-increments from the list of {@link Model::fields() declared fields}.
+	 *
+	 * @return string
+	 */
+	public static function getIncrementingField() {
+		$column = static::getTable()->getIncrementingColumn();
+
+		if (!empty($column) && in_array($column->name, static::getFields()))return $column->name;
+
+		return null;
+	}
+
+	/**
+	 * Get the unique {@link Model::fields() declared fields}.
+	 *
+	 * @return string[]
+	 */
+	public static function getUniqueFields() {
+		$columns = array_map(function(Column $column) { return $column->name; }, static::getTable()->getUniqueColumns());
+		return array_intersect($columns, static::getFields());
+	}
+
+	/**
+	 * Get the non-unique {@link Model::fields() declared fields}.
+	 *
+	 * @return string[]
+	 */
+	public static function getNonUniqueFields() {
+		$columns = array_map(function(Column $column) { return $column->name; }, static::getTable()->getNonUniqueColumns());
+		return array_intersect($columns, static::getFields());
+	}
+
+	/**
+	 * Get the {@link Model::relations() declared relations}.
 	 *
 	 * @return Relation[]
 	 */
@@ -273,7 +322,7 @@ abstract class Model implements JsonSerializable {
 	 * @return string[]
 	 */
 	public function getUniquePrimitiveData() {
-		return array_filter($this->getPrimitiveData(), function($key) { return in_array($key, $this->unique()); }, ARRAY_FILTER_USE_KEY);
+		return array_filter($this->getPrimitiveData(), function($key) { return in_array($key, static::getUniqueFields()); }, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
@@ -282,7 +331,7 @@ abstract class Model implements JsonSerializable {
 	 * @return string[]
 	 */
 	public function getNonUniquePrimitiveData() {
-		return array_filter($this->getPrimitiveData(), function($key) { return !in_array($key, $this->unique()); }, ARRAY_FILTER_USE_KEY);
+		return array_filter($this->getPrimitiveData(), function($key) { return !in_array($key, static::getUniqueFields()); }, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
@@ -306,7 +355,7 @@ abstract class Model implements JsonSerializable {
 	 * @return mixed[]
 	 */
 	public function getUniqueRefinedData() {
-		return array_filter($this->getRefinedData(), function($key) { return in_array($key, $this->unique()); }, ARRAY_FILTER_USE_KEY);
+		return array_filter($this->getRefinedData(), function($key) { return in_array($key, static::getUniqueFields()); }, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
@@ -315,7 +364,7 @@ abstract class Model implements JsonSerializable {
 	 * @return mixed[]
 	 */
 	public function getNonUniqueRefinedData() {
-		return array_filter($this->getRefinedData(), function($key) { return !in_array($key, $this->unique()); }, ARRAY_FILTER_USE_KEY);
+		return array_filter($this->getRefinedData(), function($key) { return !in_array($key, static::getUniqueFields()); }, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**

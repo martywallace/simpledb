@@ -53,12 +53,27 @@ class Table {
 	}
 
 	/**
+	 * Get a single {@link Column column} in this table by its name.
+	 *
+	 * @param string $name The column name.
+	 *
+	 * @return Column
+	 */
+	public function getColumn($name) {
+		foreach ($this->getColumns() as $column) {
+			if ($column->name === $name) return $column;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Get all PRIMARY or UNIQUE columns.
 	 *
 	 * @return Column[]
 	 */
 	public function getUniqueColumns() {
-		return array_filter($this->getColumns(), function(Column $column) { return $column->isUnique(); });
+		return array_values(array_filter($this->getColumns(), function(Column $column) { return $column->isUnique(); }));
 	}
 
 	/**
@@ -67,7 +82,7 @@ class Table {
 	 * @return Column[]
 	 */
 	public function getPrimaryColumns() {
-		return array_filter($this->getColumns(), function(Column $column) { return $column->key === Column::PRIMARY; });
+		return array_values(array_filter($this->getColumns(), function(Column $column) { return $column->key === Column::PRIMARY; }));
 	}
 
 	/**
@@ -89,7 +104,7 @@ class Table {
 	 * @return Column[]
 	 */
 	public function getNonUniqueColumns() {
-		return array_filter($this->getColumns(), function(Column $column) { return !$column->isUnique(); });
+		return array_values(array_filter($this->getColumns(), function(Column $column) { return !$column->isUnique(); }));
 	}
 
 	/**
