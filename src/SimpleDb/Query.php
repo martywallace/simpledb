@@ -21,7 +21,7 @@ class Query {
 			$fields = [$fields];
 		}
 
-		return new Query('SElECT ' . implode(', ', $fields) . ' FROM ' . $table);
+		return new Query('SELECT ' . implode(', ', $fields) . ' FROM ' . $table);
 	}
 
 	/**
