@@ -7,10 +7,10 @@ header('Content-Type: text/plain');
 use SimpleDb\Database;
 use SimpleDb\Field;
 use SimpleDb\Model;
-use SimpleDb\HasOneRelation;
+use SimpleDb\SingleRelation;
 use SimpleDb\Row;
 use SimpleDb\Relation;
-use SimpleDb\HasManyRelation;
+use SimpleDb\MultipleRelation;
 use SimpleDb\Query;
 
 /**
@@ -41,14 +41,17 @@ class User extends Model {
 	
 	protected function relations() {
 		return [
-			'parent' => new HasOneRelation(User::class, 'parentId'),
-			'children' => new HasManyRelation(User::class, 'parentId')
+			'parent' => new SingleRelation(User::class, 'parentId'),
+			'children' => new MultipleRelation(User::class, 'parentId')
 		];
 	}
 }
 
-$db = new Database('root@localhost/test');
+$db = new Database('root@localhost/test', true);
 
-$user = $db->table('users')->one(['id' => 2])->populate(User::class);
+$user = $db->table('users')->find(1)->populate(User::class);
 
-var_dump($user->children);
+print_r($user->parent);
+print_r($db->table('users')->count());
+
+print_r($db->prepared);

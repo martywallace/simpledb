@@ -1,14 +1,12 @@
 <?php namespace SimpleDb;
 
-use Exception;
-
 /**
  * A relationship of many external records.
  *
  * @package SimpleDb
  * @author Marty Wallace
  */
-class HasManyRelation extends Relation {
+class MultipleRelation extends Relation {
 
 	/** @var string */
 	private $_foreign;

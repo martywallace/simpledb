@@ -112,13 +112,30 @@ class Table {
 	}
 
 	/**
+	 * Find a record using its primary key.
+	 *
+	 * @param string|string[]|int|int[] $primary The primary key. An array can be provided for multiple keys.
+	 *
+	 * @return Row
+	 */
+	public function find($primary) {
+		if (!is_array($primary)) {
+			$primary = [$primary];
+		}
+
+		return Database::get()->one(Query::select($this->_name)->where(array_map(function(Column $column) {
+			return $column->name;
+		}, $this->getPrimaryColumns()))->limit(1), $primary);
+	}
+
+	/**
 	 * Return one row from this table using search criteria.
 	 *
 	 * @param array $criteria An array of fields mapped to values to search for.
 	 *
 	 * @return Row
 	 */
-	public function one(array $criteria) {
+	public function oneWhere(array $criteria) {
 		return Database::get()->one(Query::select($this->_name)->where(array_keys($criteria))->limit(1), array_values($criteria));
 	}
 

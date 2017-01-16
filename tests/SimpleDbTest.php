@@ -39,7 +39,7 @@ class SimpleDbTest extends TestCase {
 
 		$db->table('users')->insert(['name' => 'John', 'email' => $email]);
 
-		$this->assertEquals($db->table('users')->one(['email' => $email])->name, 'John');
+		$this->assertEquals($db->table('users')->oneWhere(['email' => $email])->name, 'John');
 
 		return $email;
 	}
@@ -49,7 +49,7 @@ class SimpleDbTest extends TestCase {
 	 * @depends testInsert
 	 */
 	public function testOne(Database $db, $email) {
-		$record = $db->table('users')->one(['email' => $email]);
+		$record = $db->table('users')->oneWhere(['email' => $email]);
 
 		$this->assertTrue($record instanceof Row);
 	}
@@ -70,7 +70,7 @@ class SimpleDbTest extends TestCase {
 	public function testDelete(Database $db, $email) {
 		$db->table('users')->delete(['email' => $email]);
 
-		$this->assertNull($db->table('users')->one(['email' => $email]));
+		$this->assertNull($db->table('users')->oneWhere(['email' => $email]));
 	}
 
 	public function testBuildSelectQuery() {

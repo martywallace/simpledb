@@ -1,14 +1,12 @@
 <?php namespace SimpleDb;
 
-use Exception;
-
 /**
  * A relationship of one external record.
  *
  * @package SimpleDb
  * @author Marty Wallace
  */
-class HasOneRelation extends Relation {
+class SingleRelation extends Relation {
 
 	/** @var string */
 	private $_local;
@@ -36,11 +34,9 @@ class HasOneRelation extends Relation {
 	 * @param Model $model The model who the related data is attached to.
 	 *
 	 * @return Model
-	 *
-	 * @throws Exception If the table name of the foreign model could not be determined.
 	 */
 	public function fetch(Model $model) {
-		$row = $this->getForeignTable()->one([$this->_foreign => $model->getFieldValue($this->_local)]);
+		$row = $this->getForeignTable()->oneWhere([$this->_foreign => $model->getFieldValue($this->_local)]);
 		return empty($row) ? null : $row->populate($this->model);
 	}
 
