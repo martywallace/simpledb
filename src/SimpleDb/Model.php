@@ -114,7 +114,7 @@ abstract class Model implements JsonSerializable {
 	 *
 	 * @return static|Models|null
 	 */
-	public static function from(Populator $populator) {
+	public static function from($populator) {
 		if (!empty($populator)) {
 			return $populator->populate(static::class);
 		} else {

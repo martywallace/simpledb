@@ -142,15 +142,75 @@ class FieldTest extends TestCase {
 	}
 
 	public function testDatetimeToRefined() {
-		// TODO.
+		$this->assertEquals([
+			Field::toRefined('', Field::DATETIME),
+			Field::toRefined('0', Field::DATETIME),
+			Field::toRefined('2017-01-01', Field::DATETIME),
+			Field::toRefined(false, Field::DATETIME),
+			Field::toRefined(null, Field::DATETIME),
+			Field::toRefined(new DateTime('2017-01-01'), Field::DATETIME),
+		], [
+			null,
+			null,
+			new DateTime('2017-01-01 00:00:00'),
+			null,
+			null,
+			new DateTime('2017-01-01 00:00:00')
+		]);
 	}
 
 	public function testJsonToPrimitive() {
-		// TODO.
+		$data = new stdClass();
+		$data->test = 5;
+
+		$this->assertSame([
+			Field::toPrimitive('', Field::JSON),
+			Field::toPrimitive('0', Field::JSON),
+			Field::toPrimitive(0, Field::JSON),
+			Field::toPrimitive(123, Field::JSON),
+			Field::toPrimitive([], Field::JSON),
+			Field::toPrimitive($data, Field::JSON),
+			Field::toPrimitive(null, Field::JSON),
+			Field::toPrimitive(false, Field::JSON)
+		], [
+			null,
+			null,
+			null,
+			'123',
+			'[]',
+			'{"test":5}',
+			null,
+			null
+		]);
 	}
 
 	public function testJsonToRefined() {
-		// TODO.
+		$data = new stdClass();
+		$data->test = 5;
+
+		$this->assertEquals([
+			Field::toRefined('', Field::JSON),
+			Field::toRefined('0', Field::JSON),
+			Field::toRefined(0, Field::JSON),
+			Field::toRefined(123, Field::JSON),
+			Field::toRefined([], Field::JSON),
+			Field::toRefined($data, Field::JSON),
+			Field::toRefined(null, Field::JSON),
+			Field::toRefined(false, Field::JSON),
+			Field::toRefined('{"test":5}', Field::JSON),
+			Field::toRefined('[]', Field::JSON)
+		], [
+			null,
+			null,
+			null,
+			123,
+			[],
+			$data,
+			null,
+			null,
+			$data,
+			[]
+		]);
 	}
 
 }

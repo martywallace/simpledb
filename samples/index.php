@@ -18,14 +18,15 @@ use SimpleDb\Query;
  * @property-read DateTime $created
  * @property-read string $name
  * @property-read string $email
+ * @property-read mixed $attributes
  * @property-read int $parentId
  *
  * @property-read User $parent
- * @property-read User[] $children
  */
 class User extends Model {
-
-	protected function table() { return 'users'; }
+	protected function table() {
+		return 'users';
+	}
 
 	protected function fields() {
 		return [
@@ -33,38 +34,21 @@ class User extends Model {
 			'created' => Field::DATETIME,
 			'name' => Field::STRING,
 			'email' => Field::STRING,
-			'parentId' => Field::INT,
-			'childOf' => Field::INT
+			'attributes' => Field::JSON,
+			'parentId' => Field::INT
 		];
 	}
 	
 	protected function relations() {
 		return [
 			'parent' => new HasOneRelation(User::class, 'parentId'),
-			'children' => new HasManyRelation(User::class, 'childOf')
+			'children' => new HasManyRelation(User::class, 'parentId')
 		];
 	}
-
 }
 
-class Another extends Model {
+$db = new Database('root@localhost/test');
 
-	protected function fields() {
-		return [
-			'two' => 'int'
-		];
-	}
+$user = $db->table('users')->one(['id' => 2])->populate(User::class);
 
-	protected function table() { return 'another'; }
-
-}
-
-//print_r(User::getNonUnique());
-
-$db = new Database('root@localhost/test', true);
-
-$user = $db->table('users')->one(['id' => 17])->populate(User::class);
-$user->name = 'Hahaha';
-$user->save();
-
-print_r($db->prepared);
+var_dump($user->children);

@@ -132,6 +132,17 @@ class Table {
 	}
 
 	/**
+	 * Return all rows that match the WHERE criteria supplied.
+	 *
+	 * @param array $criteria The WHERE criteria.
+	 *
+	 * @return Rows
+	 */
+	public function allWhere(array $criteria) {
+		return Database::get()->all(Query::select($this->_name)->where(array_keys($criteria)), array_values($criteria));
+	}
+
+	/**
 	 * Count the amount of rows in this table.
 	 *
 	 * @param array $criteria Optional WHERE criteria.

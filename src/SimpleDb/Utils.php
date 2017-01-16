@@ -39,7 +39,7 @@ class Utils {
 	 * @return bool
 	 */
 	public static function isJsonSerializable($value) {
-		return is_array($value) || $value instanceof stdClass || $value instanceof JsonSerializable;
+		return is_array($value) || $value instanceof stdClass || $value instanceof JsonSerializable || is_numeric($value);
 	}
 
 }

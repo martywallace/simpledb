@@ -96,8 +96,7 @@ class Field {
 
 		if ($type === self::JSON) {
 			if (Utils::isJsonSerializable($value)) return strval(json_encode($value));
-			else if (empty($value)) return null;
-			else throw new Exception('Could not convert refined value to JSON.');
+			else return null;
 		}
 
 		return $value;
@@ -118,10 +117,6 @@ class Field {
 			return null;
 		}
 
-		if ($type === self::STRING) {
-			return strval($value);
-		}
-
 		if (is_string($value)) {
 			if ($type === self::INT) {
 				return intval($value);
@@ -139,6 +134,10 @@ class Field {
 				}
 
 				return $base;
+			}
+		} else {
+			if ($type === self::STRING) {
+				return strval($value);
 			}
 		}
 

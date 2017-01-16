@@ -197,6 +197,8 @@ class Database {
 	 * @throws Exception If the table does not exist.
 	 */
 	public function table($name) {
+		$name = strval($name);
+		
 		if (!array_key_exists($name, $this->getTables())) {
 			throw new Exception('Table "' . $name . '" does not exist.');
 		}
