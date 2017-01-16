@@ -108,6 +108,20 @@ abstract class Model implements JsonSerializable {
 		return static::_getDefinition()->relations();
 	}
 
+	/**
+	 * @param Populator $populator The populator (usually a {@link Row} or {@link Rows} instance) that will provide data
+	 * necessary to populate the newly created model.
+	 *
+	 * @return static|Models|null
+	 */
+	public static function from(Populator $populator) {
+		if (!empty($populator)) {
+			return $populator->populate(static::class);
+		} else {
+			return null;
+		}
+	}
+
 	/** @var mixed[] */
 	private $_data = [];
 
@@ -141,16 +155,6 @@ abstract class Model implements JsonSerializable {
 	 */
 	protected function relations() {
 		return [];
-	}
-
-	/**
-	 * @param Populator $populator The populator (usually a {@link Row} or {@link Rows} instance) that will provide data
-	 * necessary to populate the newly created model.
-	 *
-	 * @return static|Models
-	 */
-	public static function from(Populator $populator) {
-		return $populator->populate(static::class);
 	}
 
 	/**
