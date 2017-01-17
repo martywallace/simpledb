@@ -9,3 +9,8 @@ Execute common MySQL operations easily with this PDO wrapper.
 ## Installation.
 
     $ composer require martywallace/simpledb
+
+## Resources.
+
+* [Project homepage](https://martywallace.com/projects/simpledb).
+* [Guide](https://martywallace.com/projects/simpledb/guide).
