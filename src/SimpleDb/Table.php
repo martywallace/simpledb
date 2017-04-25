@@ -1,6 +1,6 @@
 <?php namespace SimpleDb;
 
-use Exception;
+use JsonSerializable;
 
 /**
  * A table within the database.
@@ -10,7 +10,7 @@ use Exception;
  * @package SimpleDb
  * @author Marty Wallace
  */
-class Table {
+class Table implements JsonSerializable {
 
 	/** @var string */
 	private $_name = null;
@@ -199,6 +199,13 @@ class Table {
 		$lastId = Database::get()->lastInsertId;
 
 		return !empty($this->getIncrementingColumn()) ? $lastId : null;
+	}
+
+	public function jsonSerialize() {
+		return [
+			'name' => $this->_name,
+			'columns' => $this->getColumns()
+		];
 	}
 
 }

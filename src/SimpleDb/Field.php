@@ -35,12 +35,19 @@ class Field {
 	const JSON = 'json';
 
 	/**
+	 * A boolean value. Provides a true or false boolean when {@link Field::toRefined refined} and 0 or 1 when
+	 * {@link Field::toPrimitive made primitive}.
+	 */
+	const BOOL = 'bool';
+
+	/**
 	 * Determine whether a value of a specified type is empty:
 	 *
 	 * * {@link Field::INT} is considered empty if the value is {@link empty} but not 0 or "0".
 	 * * {@link Field::STRING} is considered empty if it is NULL, FALSE or an empty array.
 	 * * {@link Field::DateTime} is considered empty if it is {@link empty}.
 	 * * {@link Field::JSON} is considered empty if it is {@link empty} but not an array with no items.
+	 * * {@link FIeld::BOOL} is considered empty if it is NULL.
 	 *
 	 * @param string $value The value to test.
 	 * @param string $type The data type for the value, which specified the rules for emptiness.
@@ -59,6 +66,8 @@ class Field {
 		} else if ($type === self::JSON) {
 			// Allow empty arrays to be treated as non-empty.
 			return empty($value) && !is_array($value);
+		} else if ($type === self::BOOL) {
+			return $value === null;
 		}
 
 		return false;
@@ -99,6 +108,10 @@ class Field {
 			else return null;
 		}
 
+		if ($type === self::BOOL) {
+			return strval(intval($value));
+		}
+
 		return $value;
 	}
 
@@ -134,6 +147,10 @@ class Field {
 				}
 
 				return $base;
+			}
+
+			if ($type === self::BOOL) {
+				return !!$value;
 			}
 		} else {
 			if ($type === self::STRING) {

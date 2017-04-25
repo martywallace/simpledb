@@ -1,5 +1,7 @@
 <?php namespace SimpleDb;
 
+use JsonSerializable;
+
 /**
  * A table column provided by {@link Table::describe()}.
  *
@@ -12,7 +14,7 @@
  * @package SimpleDb
  * @author Marty Wallace
  */
-class Column {
+class Column implements JsonSerializable {
 
 	/** @var string A primary key. */
 	const PRIMARY = 'PRI';
@@ -31,7 +33,7 @@ class Column {
 			'name' => $def['Field'],
 			'type' => $def['Type'],
 			'null' => strtolower($def['Null']) === 'yes',
-			'key' => $def['Key'],
+			'key' => empty($def['Key']) ? null : $def['Key'],
 			'default' => $def['Default'],
 			'increments' => strpos(strtolower($def['Extra']), 'auto_increment') !== false
 		];
@@ -54,6 +56,17 @@ class Column {
 	 */
 	public function isUnique() {
 		return $this->key === self::PRIMARY || $this->key === self::UNIQUE;
+	}
+
+	public function jsonSerialize() {
+		return [
+			'name' => $this->name,
+			'type' => $this->type,
+			'key' => $this->key,
+			'increments' => $this->increments,
+			'null' => $this->null,
+			'default' => $this->_def['default']
+		];
 	}
 
 }
