@@ -1,6 +1,7 @@
 <?php namespace SimpleDb;
 
 use Exception;
+use JsonSerializable;
 
 /**
  * A single row from a database query.
@@ -8,7 +9,7 @@ use Exception;
  * @package SimpleDb
  * @author Marty Wallace
  */
-class Row implements Populator {
+class Row implements Populator, JsonSerializable {
 
 	/** @var array */
 	private $_data = [];
@@ -61,6 +62,10 @@ class Row implements Populator {
 		} else {
 			throw new Exception('Class "' . $class . '" does not exist.');
 		}
+	}
+
+	public function jsonSerialize() {
+		return $this->_data;
 	}
 
 }

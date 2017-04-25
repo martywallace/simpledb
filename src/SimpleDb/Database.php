@@ -58,13 +58,13 @@ class Database {
 	 * @throws Exception If this is not the first instance of Database created.
 	 */
 	public function __construct($connection, $debug = false) {
-		if (static::$_instance === null) {
+		if (self::$_instance === null) {
 			$this->_debug = $debug;
 
 			$this->_connection = Utils::parseConnectionString($connection);
 			$this->_pdo = new PDO('mysql:host=' . $this->_connection['host'] . ';dbname=' . $this->_connection['database'], $this->_connection['username'], $this->_connection['password']);
 
-			static::$_instance = $this;
+			self::$_instance = $this;
 		} else {
 			throw new Exception('You have already created an instance of Database - you may only have one.');
 		}

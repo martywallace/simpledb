@@ -2,6 +2,7 @@
 
 use Iterator;
 use ArrayAccess;
+use JsonSerializable;
 
 /**
  * A series of iterable data.
@@ -9,7 +10,7 @@ use ArrayAccess;
  * @package SimpleDb
  * @author Marty Wallace
  */
-abstract class Series implements Iterator, ArrayAccess {
+abstract class Series implements Iterator, ArrayAccess, JsonSerializable {
 
 	/** @var int */
 	private $_index = 0;
@@ -95,6 +96,10 @@ abstract class Series implements Iterator, ArrayAccess {
 	/** @internal */
 	public function offsetGet($offset) {
 		return isset($this->_content[$offset]) ? $this->_content[$offset] : null;
+	}
+
+	public function jsonSerialize() {
+		return $this->_content;
 	}
 
 }
