@@ -90,6 +90,10 @@ class Field {
 			return null;
 		}
 
+		if (is_string($value)) {
+			return $value;
+		}
+
 		if ($type === self::INT) {
 			return strval($value);
 		}
