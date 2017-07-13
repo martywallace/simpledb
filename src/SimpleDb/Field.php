@@ -18,6 +18,12 @@ class Field {
 	const INT = 'int';
 
 	/**
+	 * A float value. Provides the value of {@link floatval()} when {@link Field::toRefined() refined} and the string
+	 * value when {@link Field::toPrimitive() made primitive}.
+	 */
+	const FLOAT = 'float';
+
+	/**
 	 * A basic string value.
 	 */
 	const STRING = 'string';
@@ -41,7 +47,7 @@ class Field {
 	const BOOL = 'bool';
 
 	/**
-	 * Determine whether a value of a specified type is empty:
+	 * Determine whether a value of a specified type should be converted to NULL.
 	 *
 	 * * {@link Field::INT} is considered empty if the value is {@link empty} but not 0 or "0".
 	 * * {@link Field::STRING} is considered empty if it is NULL, FALSE or an empty array.
@@ -54,8 +60,8 @@ class Field {
 	 *
 	 * @return bool
 	 */
-	public static function isEmpty($value, $type) {
-		if ($type === self::INT) {
+	public static function isNull($value, $type) {
+		if ($type === self::INT || $type === self::FLOAT) {
 			// Don't treat '0' and 0 as empty values, those are valid ints of value 0.
 			return empty($value) && $value !== 0 && $value !== '0';
 		} else if ($type === self::STRING) {
@@ -85,16 +91,12 @@ class Field {
 	 * @throws Exception If any errors were encountered attempting to convert the value.
 	 */
 	public static function toPrimitive($value, $type) {
-		if (self::isEmpty($value, $type)) {
+		if (self::isNull($value, $type)) {
 			// Use NULL for values considered empty.
 			return null;
 		}
 
-		if ($type === self::INT) {
-			return strval($value);
-		}
-
-		if ($type === self::STRING) {
+		if ($type === self::INT || $type === self::FLOAT || $type === self::STRING) {
 			return strval($value);
 		}
 
@@ -125,7 +127,7 @@ class Field {
 	 * @return mixed
 	 */
 	public static function toRefined($value, $type) {
-		if (self::isEmpty($value, $type)) {
+		if (self::isNull($value, $type)) {
 			// Use NULL for values considered empty.
 			return null;
 		}
@@ -133,6 +135,10 @@ class Field {
 		if (is_string($value)) {
 			if ($type === self::INT) {
 				return intval($value);
+			}
+
+			if ($type === self::FLOAT) {
+				return floatval($value);
 			}
 
 			if ($type === self::DATETIME) {

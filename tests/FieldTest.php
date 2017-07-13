@@ -9,23 +9,23 @@ class FieldTest extends TestCase {
 
 	public function testEmpty() {
 		$this->assertEquals([
-			Field::isEmpty(false, Field::INT),
-			Field::isEmpty(null, Field::INT),
-			Field::isEmpty(0, Field::INT),
-			Field::isEmpty('0', Field::INT),
-			Field::isEmpty('', Field::INT),
-			Field::isEmpty(1, Field::INT),
-			Field::isEmpty('test', Field::INT),
-			Field::isEmpty([], Field::INT),
+			Field::isNull(false, Field::INT),
+			Field::isNull(null, Field::INT),
+			Field::isNull(0, Field::INT),
+			Field::isNull('0', Field::INT),
+			Field::isNull('', Field::INT),
+			Field::isNull(1, Field::INT),
+			Field::isNull('test', Field::INT),
+			Field::isNull([], Field::INT),
 
-			Field::isEmpty(false, Field::STRING),
-			Field::isEmpty(null, Field::STRING),
-			Field::isEmpty(0, Field::STRING),
-			Field::isEmpty('0', Field::STRING),
-			Field::isEmpty('', Field::STRING),
-			Field::isEmpty(1, Field::STRING),
-			Field::isEmpty('test', Field::STRING),
-			Field::isEmpty([], Field::STRING)
+			Field::isNull(false, Field::STRING),
+			Field::isNull(null, Field::STRING),
+			Field::isNull(0, Field::STRING),
+			Field::isNull('0', Field::STRING),
+			Field::isNull('', Field::STRING),
+			Field::isNull(1, Field::STRING),
+			Field::isNull('test', Field::STRING),
+			Field::isNull([], Field::STRING)
 		], [
 			true,
 			true,
