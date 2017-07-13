@@ -1,6 +1,6 @@
-#simpledb.
+# simpledb.
 
-![https://travis-ci.org/MartyWallace/simpledb](https://api.travis-ci.org/MartyWallace/simpledb.svg?branch=master)
+[![Build Status](https://travis-ci.org/MartyWallace/simpledb.svg?branch=master)](https://travis-ci.org/MartyWallace/simpledb)
 
 Execute common MySQL operations easily with this PDO wrapper.
 
