@@ -63,7 +63,7 @@ class Field {
 	public static function isNull($value, $type) {
 		if ($type === self::INT || $type === self::FLOAT) {
 			// Don't treat '0' and 0 as empty values, those are valid ints of value 0.
-			return empty($value) && $value !== 0 && $value !== '0';
+			return $value === null || $value === false || $value === '' || $value === [];
 		} else if ($type === self::STRING) {
 			// Don't consider empty strings, "0" or 0 as empty, we still want to store those.
 			return $value === null || $value === false || $value === [];

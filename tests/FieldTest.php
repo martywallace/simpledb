@@ -85,6 +85,30 @@ class FieldTest extends TestCase {
 		]);
 	}
 
+	public function testFloatToRefined() {
+		$this->assertSame([
+			Field::toRefined(0, Field::FLOAT),
+			Field::toRefined('0', Field::FLOAT),
+			Field::toRefined('0.0', Field::FLOAT),
+			Field::toRefined(0.000000, Field::FLOAT),
+			Field::toRefined('', Field::FLOAT),
+			Field::toRefined(false, Field::FLOAT),
+			Field::toRefined(null, Field::FLOAT),
+			Field::toRefined(123.5, Field::FLOAT),
+			Field::toRefined('0832', Field::FLOAT)
+		], [
+			0,
+			0.0,
+			0.0,
+			0.0,
+			null,
+			null,
+			null,
+			123.5,
+			832.0
+		]);
+	}
+
 	public function testStringToPrimitive() {
 		$this->assertSame([
 			Field::toPrimitive('', Field::STRING),
