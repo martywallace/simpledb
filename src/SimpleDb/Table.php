@@ -185,7 +185,7 @@ class Table implements JsonSerializable {
 	 * @return int
 	 */
 	public function count(array $criteria = []) {
-		return intval(Database::get()->prop(Query::select($this->_name, 'COUNT(*)')->where($criteria)));
+		return intval(Database::get()->prop(Query::select($this->_name, 'COUNT(*)')->where(array_keys($criteria)), array_values($criteria)));
 	}
 
 	/**
