@@ -42,6 +42,22 @@ abstract class Model implements JsonSerializable {
 	}
 
 	/**
+	 * Perform an intersection on a set of {@link Column columns} and the {@link fields() declared fields} of this model
+	 * and return the field names that appear as column names of the input.
+	 *
+	 * @param array $columns The input columns.
+	 *
+	 * @return string[]
+	 */
+	public static function intersectFields(array $columns) {
+		$columnNames = array_values(array_map(function(Column $column) {
+			return $column->name;
+		}, $columns));
+
+		return array_intersect($columnNames, static::getFields());
+	}
+
+	/**
 	 * Get the type associated with a {@link Model::fields() declared field}.
 	 *
 	 * @param string $field The field name.
@@ -62,8 +78,7 @@ abstract class Model implements JsonSerializable {
 	 * @return string[]
 	 */
 	public static function getPrimaryFields() {
-		$columns = array_map(function(Column $column) { return $column->name; }, static::getTable()->getPrimaryColumns());
-		return array_intersect($columns, static::getFields());
+		return static::intersectFields(static::getTable()->getPrimaryColumns());
 	}
 
 	/**
@@ -85,8 +100,7 @@ abstract class Model implements JsonSerializable {
 	 * @return string[]
 	 */
 	public static function getUniqueFields() {
-		$columns = array_map(function(Column $column) { return $column->name; }, static::getTable()->getUniqueColumns());
-		return array_intersect($columns, static::getFields());
+		return static::intersectFields(static::getTable()->getUniqueColumns());
 	}
 
 	/**
@@ -95,8 +109,25 @@ abstract class Model implements JsonSerializable {
 	 * @return string[]
 	 */
 	public static function getNonUniqueFields() {
-		$columns = array_map(function(Column $column) { return $column->name; }, static::getTable()->getNonUniqueColumns());
-		return array_intersect($columns, static::getFields());
+		return static::intersectFields(static::getTable()->getNonNullableColumns());
+	}
+
+	/**
+	 * Gets all fields who are able to be provided NULL.
+	 *
+	 * @return string[]
+	 */
+	public static function getNullableFields() {
+		return static::intersectFields(static::getTable()->getNullableColumns());
+	}
+
+	/**
+	 * Gets all fields who are not able to be provided NULL.
+	 *
+	 * @return string[]
+	 */
+	public static function getNonNullableFields() {
+		return static::intersectFields(static::getTable()->getNonNullableColumns());
 	}
 
 	/**

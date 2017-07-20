@@ -112,6 +112,24 @@ class Table implements JsonSerializable {
 	}
 
 	/**
+	 * Get all columns that can be provided with NULL.
+	 *
+	 * @return Column[]
+	 */
+	public function getNullableColumns() {
+		return array_values(array_filter($this->getColumns(), function(Column $column) { return $column->null; }));
+	}
+
+	/**
+	 * Get all columns that cannot be provided with NULL.
+	 *
+	 * @return Column[]
+	 */
+	public function getNonNullableColumns() {
+		return array_values(array_filter($this->getColumns(), function(Column $column) { return !$column->null; }));
+	}
+
+	/**
 	 * Find a record using its primary key.
 	 *
 	 * @param string|string[]|int|int[] $primary The primary key. An array can be provided for multiple keys.
