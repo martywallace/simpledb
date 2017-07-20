@@ -145,6 +145,20 @@ class SimpleDbTest extends TestCase {
 	/**
 	 * @depends testModelCreation
 	 */
+	public function testNullableFields(Model $model) {
+		$this->assertEquals($model->getNullableFields(), ['name', 'email', 'created', 'attributes']);
+	}
+
+	/**
+	 * @depends testModelCreation
+	 */
+	public function testNonNullableFields(Model $model) {
+		$this->assertEquals($model->getNonNullableFields(), ['id']);
+	}
+
+	/**
+	 * @depends testModelCreation
+	 */
 	public function testInitialPrimitiveData(Model $model) {
 		$this->assertEquals($model->getPrimitiveData(), [
 			'id' => null,

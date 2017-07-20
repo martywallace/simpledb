@@ -109,7 +109,7 @@ abstract class Model implements JsonSerializable {
 	 * @return string[]
 	 */
 	public static function getNonUniqueFields() {
-		return static::intersectFields(static::getTable()->getNonNullableColumns());
+		return static::intersectFields(static::getTable()->getNonUniqueColumns());
 	}
 
 	/**
