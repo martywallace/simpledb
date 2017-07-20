@@ -5,7 +5,6 @@ require('./vendor/autoload.php');
 use PHPUnit\Framework\TestCase;
 use SimpleDb\Database;
 use SimpleDb\Row;
-use SimpleDb\Rows;
 use SimpleDb\Query;
 use SimpleDb\Model;
 use SimpleDb\Field;

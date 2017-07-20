@@ -59,14 +59,7 @@ class Column implements JsonSerializable {
 	}
 
 	public function jsonSerialize() {
-		return [
-			'name' => $this->name,
-			'type' => $this->type,
-			'key' => $this->key,
-			'increments' => $this->increments,
-			'null' => $this->null,
-			'default' => $this->_def['default']
-		];
+		return $this->_def;
 	}
 
 }

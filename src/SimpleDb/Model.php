@@ -109,17 +109,41 @@ abstract class Model implements JsonSerializable {
 	}
 
 	/**
-	 * @param Populator $populator The populator (usually a {@link Row} or {@link Rows} instance) that will provide data
-	 * necessary to populate the newly created model.
+	 * Creates one or more instances of this model from one or more {@link Row rows}.
 	 *
-	 * @return static|Models|null
+	 * @param Row|Row[] $rows One or more rows to create instances from.
+	 *
+	 * @return static|static[]
 	 */
-	public static function from($populator) {
-		if (!empty($populator)) {
-			return $populator->populate(static::class);
-		} else {
-			return null;
+	public static function from($rows) {
+		if (is_array($rows)) {
+			return array_map(function(Row $row) { return static::from($row); }, $rows);
 		}
+
+		return new static($rows->getData());
+	}
+
+	/**
+	 * Create one or more instances of this model from one or more sets of primitive array data. If the first item in
+	 * the provided array is another array, this method will create multiple instances using the data from each of the
+	 * sub-arrays, otherwise this method returns a single instance using the data in the array it was provided.
+	 *
+	 * @param array|array[] $data The data to populate the instances with, either in the format ['field' => value] for
+	 * a single instances or [['field' => value], ['field' => value]] for multiple instances.
+	 *
+	 * @return static|static[]
+	 */
+	public static function create(array $data = []) {
+		if (!empty($data)) {
+			if (!empty($data[0]) && is_array($data[0])) {
+				return array_map(function(array $child) { return static::create($child); }, $data);
+			}
+
+			return new static($data);
+		}
+
+		// Fall back to an empty instance.
+		return new static();
 	}
 
 	/** @var mixed[] */
@@ -379,7 +403,7 @@ abstract class Model implements JsonSerializable {
 	 *
 	 * @param string $name The relation name {@link Model::relations() specified}.
 	 *
-	 * @returns Model|Models
+	 * @returns Model|Model[]
 	 *
 	 * @throws Exception If the relation name is unknown.
 	 */

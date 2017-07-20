@@ -33,7 +33,7 @@ class MultipleRelation extends Relation {
 	 *
 	 * @param Model $model The model who the related data is attached to.
 	 *
-	 * @return Models
+	 * @return Model[]
 	 */
 	public function fetch(Model $model) {
 		return $this->getForeignTable()->allWhere([$this->_foreign => $model->getFieldValue($this->_local)])->populate($this->model);

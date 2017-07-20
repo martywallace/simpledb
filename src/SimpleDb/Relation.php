@@ -30,7 +30,7 @@ abstract class Relation {
 	 *
 	 * @param Model $model The model to fetch related data through.
 	 *
-	 * @return Model|Models
+	 * @return Model|Model[]
 	 */
 	abstract public function fetch(Model $model);
 

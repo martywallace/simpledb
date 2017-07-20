@@ -127,7 +127,9 @@ class Database {
 	 * @throws Exception If the provided class does not exist.
 	 */
 	public function one($query, array $params = null) {
-		return $this->all($query, $params)->first();
+		$rows = $this->all($query, $params);
+
+		return count($rows) > 0 ? $rows[0] : null;
 	}
 
 	/**
@@ -136,16 +138,15 @@ class Database {
 	 * @param string|Query $query The query to execute.
 	 * @param array|null $params Parameters to bind to the query.
 	 *
-	 * @return Rows
+	 * @return Row[]
 	 *
 	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
 	 * @throws Exception If the provided class does not exist.
 	 */
 	public function all($query, array $params = null) {
 		$stmt = $this->query($query, $params);
-		$rows = $stmt->fetchAll(PDO::FETCH_CLASS, Row::class);
 
-		return new Rows($rows);
+		return $stmt->fetchAll(PDO::FETCH_CLASS, Row::class);
 	}
 
 	/**

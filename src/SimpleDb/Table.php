@@ -50,7 +50,7 @@ class Table implements JsonSerializable {
 		if (empty($this->_columns)) {
 			$this->_columns = array_map(function(Row $row) {
 				return new Column($row->getData());
-			}, Database::get()->all(Query::describe($this->_name))->content());
+			}, Database::get()->all(Query::describe($this->_name)));
 		}
 
 		return $this->_columns;
@@ -142,7 +142,7 @@ class Table implements JsonSerializable {
 	/**
 	 * Return all rows from this table.
 	 *
-	 * @return Rows
+	 * @return Row[]
 	 */
 	public function all() {
 		return Database::get()->all(Query::select($this->_name));
@@ -153,7 +153,7 @@ class Table implements JsonSerializable {
 	 *
 	 * @param array $criteria The WHERE criteria.
 	 *
-	 * @return Rows
+	 * @return Row[]
 	 */
 	public function allWhere(array $criteria) {
 		return Database::get()->all(Query::select($this->_name)->where(array_keys($criteria)), array_values($criteria));
