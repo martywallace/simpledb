@@ -59,7 +59,7 @@ class SimpleDbTest extends TestCase {
 	public function testAll(Database $db) {
 		$records = $db->table('users')->all();
 
-		$this->assertTrue($records instanceof Rows);
+		$this->assertTrue(is_array($records));
 	}
 
 	/**

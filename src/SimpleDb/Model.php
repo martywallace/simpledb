@@ -116,11 +116,17 @@ abstract class Model implements JsonSerializable {
 	 * @return static|static[]
 	 */
 	public static function from($rows) {
-		if (is_array($rows)) {
-			return array_map(function(Row $row) { return static::from($row); }, $rows);
+		if (!empty($rows)) {
+			if (is_array($rows)) {
+				return array_map(function (Row $row) {
+					return static::from($row);
+				}, $rows);
+			}
+
+			return new static($rows->getData());
 		}
 
-		return new static($rows->getData());
+		return is_array($rows) ? [] : null;
 	}
 
 	/**
@@ -144,6 +150,26 @@ abstract class Model implements JsonSerializable {
 
 		// Fall back to an empty instance.
 		return new static();
+	}
+
+	/**
+	 * Find an instance of this model using its primary key.
+	 *
+	 * @param string|string[]|int|int[] $primary The primary key value.
+	 *
+	 * @return static
+	 */
+	public static function find($primary) {
+		return static::from(static::getTable()->find($primary));
+	}
+
+	/**
+	 * Find all instances of this model.
+	 *
+	 * @return static[]
+	 */
+	public static function all() {
+		return static::from(static::getTable()->all());
 	}
 
 	/** @var mixed[] */
