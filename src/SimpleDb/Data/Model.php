@@ -1,7 +1,9 @@
-<?php namespace SimpleDb;
+<?php namespace SimpleDb\Data;
 
 use Exception;
 use JsonSerializable;
+use SimpleDb\Database;
+use SimpleDb\Relations\Relation;
 
 /**
  * A model can be populated by raw data from rows returned from a query.

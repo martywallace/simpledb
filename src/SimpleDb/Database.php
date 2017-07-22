@@ -3,7 +3,10 @@
 use PDO;
 use PDOStatement;
 use Exception;
-
+use SimpleDb\Data\Table;
+use SimpleDb\Data\Row;
+use SimpleDb\Util\Query;
+use SimpleDb\Util\Utils;
 
 /**
  * Provides access to a database.

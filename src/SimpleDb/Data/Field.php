@@ -1,7 +1,8 @@
-<?php namespace SimpleDb;
+<?php namespace SimpleDb\Data;
 
-use DateTime;
 use Exception;
+use Carbon\Carbon;
+use SimpleDb\Util\Utils;
 
 /**
  * Encapsulates functionality that deals with model fields.
@@ -29,7 +30,7 @@ class Field {
 	const STRING = 'string';
 
 	/**
-	 * A DateTime value. Provides a {@link DateTime} instance when {@link Field::toRefined() refined} and a string
+	 * A DateTime value. Provides a {@link Carbon} instance when {@link Field::toRefined() refined} and a string
 	 * formatted "Y-m-d H:i:s" when {@link Field::toPrimitive() made primitive}.
 	 */
 	const DATETIME = 'datetime';
@@ -101,8 +102,8 @@ class Field {
 		}
 
 		if ($type === self::DATETIME) {
-			if ($value instanceof DateTime) return $value->format('Y-m-d H:i:s');
-			else return (new DateTime($value))->format('Y-m-d H:i:s');
+			if ($value instanceof Carbon) return $value->format('Y-m-d H:i:s');
+			else return (new Carbon($value))->format('Y-m-d H:i:s');
 		}
 
 		if ($type === self::JSON) {
@@ -142,7 +143,7 @@ class Field {
 			}
 
 			if ($type === self::DATETIME) {
-				return new DateTime($value);
+				return new Carbon($value);
 			}
 
 			if ($type === self::JSON) {

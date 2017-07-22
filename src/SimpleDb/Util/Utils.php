@@ -1,4 +1,4 @@
-<?php namespace SimpleDb;
+<?php namespace SimpleDb\Util;
 
 use Exception;
 use JsonSerializable;

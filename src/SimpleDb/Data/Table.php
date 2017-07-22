@@ -1,6 +1,8 @@
-<?php namespace SimpleDb;
+<?php namespace SimpleDb\Data;
 
 use JsonSerializable;
+use SimpleDb\Database;
+use SimpleDb\Util\Query;
 
 /**
  * A table within the database.

@@ -1,6 +1,8 @@
-<?php namespace SimpleDb;
+<?php namespace SimpleDb\Relations;
 
 use Exception;
+use SimpleDb\Data\Table;
+use SimpleDb\Data\Model;
 
 /**
  * A database relationship.
@@ -11,6 +13,28 @@ use Exception;
  * @author Marty Wallace
  */
 abstract class Relation {
+
+	/**
+	 * A relationship of one foreign record pointing to this record, e.g. a profile record with the field "userId"
+	 * pointing to a user with a matching "id".
+	 *
+	 * @param $model
+	 */
+	public function hasOne($model) {
+		//
+	}
+
+	public function belongsTo($model) {
+		//
+	}
+
+	public function hasMany($model) {
+		//
+	}
+
+	public function hasManyVia($model) {
+		//
+	}
 
 	/** @var string */
 	private $_model = null;
