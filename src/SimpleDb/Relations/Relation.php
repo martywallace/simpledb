@@ -15,15 +15,24 @@ use SimpleDb\Data\Model;
 abstract class Relation {
 
 	/**
-	 * A relationship of one foreign record pointing to this record, e.g. a profile record with the field "userId"
-	 * pointing to a user with a matching "id".
+	 * A relationship of one foreign record being referenced by a local key.
+	 *
+	 * @param string $model The type of model this relationship generates.
+	 * @param string $local The local field that points to the related model.
+	 * @param string $foreign The foreign field that matches the value of the local field. Defaults to the first
+	 * {@link Model::getPrimaryFields() primary field} of the related model.
+	 *
+	 * @return HasOne
+	 */
+	public static function hasOne($model, $local, $foreign = null) {
+		return new HasOne($model, $local, $foreign);
+	}
+
+	/**
+	 * A relationship of one foreign record referencing the local record.
 	 *
 	 * @param $model
 	 */
-	public function hasOne($model) {
-		//
-	}
-
 	public function belongsTo($model) {
 		//
 	}

@@ -4,6 +4,7 @@ use Exception;
 use JsonSerializable;
 use SimpleDb\Database;
 use SimpleDb\Relations\Relation;
+use Doctrine\Common\Inflector\Inflector;
 
 /**
  * A model can be populated by raw data from rows returned from a query.
@@ -216,7 +217,9 @@ abstract class Model implements JsonSerializable {
 	 *
 	 * @return string
 	 */
-	abstract protected function table();
+	protected function table() {
+		return Inflector::pluralize(Inflector::tableize(static::class));
+	}
 
 	/**
 	 * Return an array of fields that this model should handle. The keys of the returned array should be the names of
