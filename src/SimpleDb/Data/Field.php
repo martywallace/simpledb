@@ -7,7 +7,7 @@ use SimpleDb\Util\Utils;
 /**
  * Encapsulates functionality that deals with model fields.
  *
- * @package SimpleDb
+ * @package SimpleDb\Data
  * @author Marty Wallace
  */
 class Field {

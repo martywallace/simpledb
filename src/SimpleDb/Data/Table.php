@@ -9,7 +9,7 @@ use SimpleDb\Util\Query;
  *
  * @property-read string $name The name of this table.
  *
- * @package SimpleDb
+ * @package SimpleDb\Data
  * @author Marty Wallace
  */
 class Table implements JsonSerializable {

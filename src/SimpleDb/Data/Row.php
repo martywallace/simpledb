@@ -5,7 +5,7 @@ use JsonSerializable;
 /**
  * A single row from a database query.
  *
- * @package SimpleDb
+ * @package SimpleDb\Data
  * @author Marty Wallace
  */
 class Row implements JsonSerializable {

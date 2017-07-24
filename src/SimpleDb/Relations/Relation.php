@@ -15,34 +15,45 @@ use SimpleDb\Data\Model;
 abstract class Relation {
 
 	/**
-	 * A relationship of one foreign record being referenced by a local key.
+	 * A relationship of one foreign model.
 	 *
-	 * @param string $model The type of model this relationship generates.
+	 * @param string $model The type of model this relationship produces.
 	 * @param string $local The local field that points to the related model.
-	 * @param string $foreign The foreign field that matches the value of the local field. Defaults to the first
-	 * {@link Model::getPrimaryFields() primary field} of the related model.
+	 * @param string $foreign The foreign field that matches the value of the local field.
 	 *
-	 * @return HasOne
+	 * @return One
 	 */
-	public static function hasOne($model, $local, $foreign = null) {
-		return new HasOne($model, $local, $foreign);
+	public static function one($model, $local, $foreign = 'id') {
+		return new One($model, $local, $foreign);
 	}
 
 	/**
-	 * A relationship of one foreign record referencing the local record.
+	 * A relationship of many foreign models.
 	 *
-	 * @param $model
+	 * @param string $model The type of model this relationship produces.
+	 * @param string $foreign The foreign field pointing to the local model.
+	 * @param string $local The local field that matches the value of the foreign field.
+	 *
+	 * @return Many
 	 */
-	public function belongsTo($model) {
-		//
+	public static function many($model, $foreign, $local = 'id') {
+		return new Many($model, $foreign, $local);
 	}
 
-	public function hasMany($model) {
-		//
-	}
-
-	public function hasManyVia($model) {
-		//
+	/**
+	 * A relationship of many foreign models through a junction table.
+	 *
+	 * @param string $model The type of model this relationship produces.
+	 * @param string $junctionTable The junction table.
+	 * @param string $junctionLocal The column within the junction table pointing to the local model.
+	 * @param string $junctionForeign The column within the junction table pointing to the foreign model.
+	 * @param string $local The local column linked to the junction table.
+	 * @param string $foreign The foreign column pointing to the junction table.
+	 *
+	 * @return Via
+	 */
+	public static function via($model, $junctionTable, $junctionLocal, $junctionForeign, $local = 'id', $foreign = 'id') {
+		return new Via($model, $junctionTable, $junctionLocal, $junctionForeign, $local, $foreign);
 	}
 
 	/** @var string */

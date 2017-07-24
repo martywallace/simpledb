@@ -3,7 +3,7 @@
 /**
  * A utility class for composing queries.
  *
- * @package SimpleDb
+ * @package SimpleDb\Util;
  * @author Marty Wallace
  */
 class Query {

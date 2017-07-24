@@ -11,7 +11,7 @@ use JsonSerializable;
  * @property-read string $key The key type for this column.
  * @property-read bool $increments Whether or not this column auto-increments.
  *
- * @package SimpleDb
+ * @package SimpleDb\Data
  * @author Marty Wallace
  */
 class Column implements JsonSerializable {

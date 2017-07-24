@@ -7,7 +7,7 @@ use stdClass;
 /**
  * Utilities for this package.
  *
- * @package SimpleDb
+ * @package SimpleDb\Util;
  * @author Marty Wallace
  */
 class Utils {

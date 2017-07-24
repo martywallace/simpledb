@@ -9,7 +9,7 @@ use Doctrine\Common\Inflector\Inflector;
 /**
  * A model can be populated by raw data from rows returned from a query.
  *
- * @package SimpleDb
+ * @package SimpleDb\Data
  * @author Marty Wallace
  */
 abstract class Model implements JsonSerializable {
@@ -176,7 +176,9 @@ abstract class Model implements JsonSerializable {
 	public static function create(array $data = []) {
 		if (!empty($data)) {
 			if (!empty($data[0]) && is_array($data[0])) {
-				return array_map(function(array $child) { return static::create($child); }, $data);
+				return array_map(function(array $child) {
+					return static::create($child);
+				}, $data);
 			}
 
 			return new static($data);
@@ -251,7 +253,7 @@ abstract class Model implements JsonSerializable {
 	public function __construct(array $data = []) {
 		foreach ($this->relations() as $name => $relation) {
 			if (!($relation instanceof Relation)) {
-				throw new Exception('Relation "' . $name . '" must inherit SimpleDb\Relation.');
+				throw new Exception('Relation "' . $name . '" must inherit ' . Relation::class . '.');
 			}
 
 			if ($this->hasField($name)) {
@@ -415,7 +417,9 @@ abstract class Model implements JsonSerializable {
 	 * @return string[]
 	 */
 	public function getUniquePrimitiveData() {
-		return array_filter($this->getPrimitiveData(), function($key) { return in_array($key, static::getUniqueFields()); }, ARRAY_FILTER_USE_KEY);
+		return array_filter($this->getPrimitiveData(), function($key) {
+			return in_array($key, static::getUniqueFields());
+		}, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
@@ -424,7 +428,9 @@ abstract class Model implements JsonSerializable {
 	 * @return string[]
 	 */
 	public function getNonUniquePrimitiveData() {
-		return array_filter($this->getPrimitiveData(), function($key) { return !in_array($key, static::getUniqueFields()); }, ARRAY_FILTER_USE_KEY);
+		return array_filter($this->getPrimitiveData(), function($key) {
+			return !in_array($key, static::getUniqueFields());
+		}, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
@@ -448,7 +454,9 @@ abstract class Model implements JsonSerializable {
 	 * @return mixed[]
 	 */
 	public function getUniqueRefinedData() {
-		return array_filter($this->getRefinedData(), function($key) { return in_array($key, static::getUniqueFields()); }, ARRAY_FILTER_USE_KEY);
+		return array_filter($this->getRefinedData(), function($key) {
+			return in_array($key, static::getUniqueFields());
+		}, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
@@ -457,7 +465,9 @@ abstract class Model implements JsonSerializable {
 	 * @return mixed[]
 	 */
 	public function getNonUniqueRefinedData() {
-		return array_filter($this->getRefinedData(), function($key) { return !in_array($key, static::getUniqueFields()); }, ARRAY_FILTER_USE_KEY);
+		return array_filter($this->getRefinedData(), function($key) {
+			return !in_array($key, static::getUniqueFields());
+		}, ARRAY_FILTER_USE_KEY);
 	}
 
 	/**
@@ -475,6 +485,20 @@ abstract class Model implements JsonSerializable {
 		} else {
 			throw new Exception('Unknown relation "' . $name . '".');
 		}
+	}
+
+	/**
+	 * Return the primary key value of this model. In the case of a composite key, an array is returned containing all
+	 * primary key values.
+	 *
+	 * @return int|string|int[]|string[]
+	 */
+	public function getPrimaryKey() {
+		$values = array_map(function($field) {
+			return $this->getFieldValue($field);
+		}, static::getPrimaryFields());
+
+		return count($values) === 1 ? $values[0] : $values;
 	}
 
 	public function jsonSerialize() {
