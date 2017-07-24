@@ -4,12 +4,12 @@ require('./vendor/autoload.php');
 
 use PHPUnit\Framework\TestCase;
 use SimpleDb\Database;
-use SimpleDb\Row;
-use SimpleDb\Query;
-use SimpleDb\Model;
-use SimpleDb\Field;
+use SimpleDb\Data\Row;
+use SimpleDb\Util\Query;
+use SimpleDb\Data\Model;
+use SimpleDb\Data\Field;
 
-class User extends Model {
+class UserTestModel_12dea96fec20593566ab75692c9949596833adc9 extends Model {
 	protected function table() { return 'users'; }
 
 	protected function fields() {
@@ -107,7 +107,7 @@ class SimpleDbTest extends TestCase {
 	}
 
 	public function testModelCreation() {
-		$model = new User();
+		$model = new UserTestModel_12dea96fec20593566ab75692c9949596833adc9();
 
 		$this->assertTrue($model instanceof Model);
 
@@ -228,7 +228,7 @@ class SimpleDbTest extends TestCase {
 	}
 
 	public function testCreateWithPrimitiveDatetime() {
-		$model = new User([
+		$model = new UserTestModel_12dea96fec20593566ab75692c9949596833adc9([
 			'created' => '2017-01-01'
 		]);
 

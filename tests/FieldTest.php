@@ -3,7 +3,8 @@
 require('./vendor/autoload.php');
 
 use PHPUnit\Framework\TestCase;
-use SimpleDb\Field;
+use SimpleDb\Data\Field;
+use Carbon\Carbon;
 
 class FieldTest extends TestCase {
 
@@ -154,7 +155,7 @@ class FieldTest extends TestCase {
 			Field::toPrimitive('2017-01-01', Field::DATETIME),
 			Field::toPrimitive(false, Field::DATETIME),
 			Field::toPrimitive(null, Field::DATETIME),
-			Field::toPrimitive(new DateTime('2017-01-01'), Field::DATETIME),
+			Field::toPrimitive(new Carbon('2017-01-01'), Field::DATETIME),
 		], [
 			null,
 			null,
@@ -172,14 +173,14 @@ class FieldTest extends TestCase {
 			Field::toRefined('2017-01-01', Field::DATETIME),
 			Field::toRefined(false, Field::DATETIME),
 			Field::toRefined(null, Field::DATETIME),
-			Field::toRefined(new DateTime('2017-01-01'), Field::DATETIME),
+			Field::toRefined(new Carbon('2017-01-01'), Field::DATETIME),
 		], [
 			null,
 			null,
-			new DateTime('2017-01-01 00:00:00'),
+			new Carbon('2017-01-01 00:00:00'),
 			null,
 			null,
-			new DateTime('2017-01-01 00:00:00')
+			new Carbon('2017-01-01 00:00:00')
 		]);
 	}
 
