@@ -5,6 +5,7 @@ use JsonSerializable;
 use SimpleDb\Database;
 use SimpleDb\Relations\Relation;
 use Doctrine\Common\Inflector\Inflector;
+use ReflectionClass;
 
 /**
  * A model can be populated by raw data from rows returned from a query.
@@ -17,6 +18,9 @@ abstract class Model implements JsonSerializable {
 	/** @var Model[] */
 	private static $_definitions = [];
 
+	/** @var ReflectionClass[] */
+	private static $_reflection = [];
+
 	/** @return Model */
 	private static function _getDefinition() {
 		if (!array_key_exists(static::class, self::$_definitions)) {
@@ -24,6 +28,15 @@ abstract class Model implements JsonSerializable {
 		}
 
 		return self::$_definitions[static::class];
+	}
+
+	/** @return ReflectionClass */
+	private static function _getReflection() {
+		if (!array_key_exists(static::class, self::$_reflection)) {
+			self::$_reflection[static::class] = new ReflectionClass(static::class);
+		}
+
+		return self::$_reflection[static::class];
 	}
 
 	/**
@@ -220,7 +233,7 @@ abstract class Model implements JsonSerializable {
 	 * @return string
 	 */
 	protected function table() {
-		return Inflector::pluralize(Inflector::tableize(static::class));
+		return Inflector::pluralize(Inflector::tableize(static::_getReflection()->getShortName()));
 	}
 
 	/**
